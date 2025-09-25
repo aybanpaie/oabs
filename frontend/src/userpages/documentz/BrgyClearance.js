@@ -36,7 +36,7 @@ function BrgyClearance() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://oabs-l648.onrender.com/create",
+        "https://oabs-f7by.onrender.com/create",
         formData
       );
       alert(response.data.message || "Record created successfully!");
