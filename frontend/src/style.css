@@ -1,0 +1,296 @@
+.bg-color-main {
+  background-color: #EAE4D5;
+}
+
+.bg-color-secondary {
+  background-color: #F2F2F2;
+}
+
+.bg-color-tertiary {
+  background-color: #B6B09F;
+}
+
+.bg-color-quadra {
+  background-color: #254D70;
+}
+
+.bg-color-fifthia {
+  background-color: #dc3545;
+}
+
+.bg-color-sixthia {
+  background-color: #FBF9F1;
+}
+
+.container-size {
+  height: 20rem;
+}
+.container-zise {
+  height: 1.5rem;
+}
+
+.container-sise {
+  height: 87vh;
+}
+
+.fonts-size {
+  font-size: 12px;
+}
+
+.textarea-size {
+  height: 100px;
+}
+
+
+.scrollmenu {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 20px 0;
+  width: 100%;
+  max-width: 1400px;
+  scrollbar-width: hide;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollmenu::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollmenu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollmenu::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollmenu::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.menuscroll {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  text-decoration: none;
+  vertical-align: top;
+  white-space: normal;
+  width: calc(33.333% - 5px);
+  min-width: 350px;
+}
+
+.card-size {
+  width: 25rem;
+  margin: 0;
+}
+
+.site-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.site-title-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.site-description {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+.nav-link-custom {
+  font-weight: 500;
+  color: #333 !important;
+  text-decoration: none;
+}
+
+.nav-link-custom:hover {
+  color: #007bff !important;
+}
+
+.nav-link.active {
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.login-container {
+  z-index: 10;
+}
+
+.login-card {
+  max-width: 420px;
+  width: 100%;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  border-color: #ffc107;
+}
+
+/* Dashboard.css */
+
+.sidebar {
+  transition: width 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.sidebar-open {
+  width: 280px;
+}
+
+.sidebar-closed {
+  width: 90px;
+}
+
+.main-content {
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.main-content-open {
+  margin-left: 280px;
+}
+
+.main-content-closed {
+  margin-left: 90px;
+}
+
+.dashboard-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.sidebar-menu-item {
+  transition: all 0.2s ease;
+  border: none;
+  border-radius: 0.375rem;
+}
+
+.sidebar-menu-item:hover {
+  background-color: #f8f9fa;
+}
+
+.sidebar-submenu-item {
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+}
+
+.sidebar-submenu-item:hover {
+  background-color: #f8f9fa;
+}
+
+.sidebar-submenu-item.active {
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.logo-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #fbbf24;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-inner {
+  width: 24px;
+  height: 24px;
+  background-color: #dc2626;
+  border-radius: 50%;
+}
+
+.notification-yellow {
+  background-color: #fef3cd;
+  border-left: 4px solid #fbbf24;
+  border-radius: 0.375rem;
+}
+
+.notification-green {
+  background-color: #d1e7dd;
+  border-left: 4px solid #198754;
+  border-radius: 0.375rem;
+} 
+
+/* MainDashboard Styles */
+
+.msidebar {
+  width: 280px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.msidebar.collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+.msidebar-item {
+  color: #6c757d;
+  border-radius: 8px;
+  margin: 2px 8px;
+  transition: all 0.2s ease;
+}
+
+.msidebar-item:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.msidebar-item.active {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.mmain-content {
+  transition: all 0.3s ease;
+}
+
+.mmain-content.expanded {
+  margin-left: 0;
+}
+
+.mcard-stat {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.mstat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/* Additional utility classes */
+.mprogress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.mbadge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
