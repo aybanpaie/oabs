@@ -25,7 +25,7 @@ app.post('/create', async (req, res) => {
     
     console.log("Attempting to insert:", { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose });
     
-    const { data, error } = await supabase.from('oabs').insert([
+    const { data, error } = await supabase.from('Barangay Clearance').insert([
       { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose }
     ]);
 
