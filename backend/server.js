@@ -10,6 +10,7 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
   app.post('/create', async (req, res) => {
+    console.log("Incoming data:", req.body);
   try {
     const { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose } = req.body;
 
