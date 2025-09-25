@@ -4,18 +4,17 @@ import axios from "axios";
 import UserTopBar from "../../includes/UserTopBar";
 
 function BrgyClearance() {
-
   useEffect(() => {
-  // Generate tracking code on component mount
-  const generateTrackingCode = () => {
-    const code = Array.from({length: 5}, () => 
-      Math.random().toString(36).substr(2, 4).toUpperCase()
-    ).join('-');
-    setFormData(prev => ({...prev, trackingcode: code}));
-  };
-  
-  generateTrackingCode();
-}, []);
+    // Generate tracking code on component mount
+    const generateTrackingCode = () => {
+      const code = Array.from({ length: 5 }, () =>
+        Math.random().toString(36).substr(2, 4).toUpperCase()
+      ).join("-");
+      setFormData((prev) => ({ ...prev, trackingcode: code }));
+    };
+
+    generateTrackingCode();
+  }, []);
 
   const [formData, setFormData] = useState({
     trackingcode: "",
@@ -40,8 +39,11 @@ function BrgyClearance() {
         formData
       );
       alert(response.data.message || "Record created successfully!");
+
+      // Generate new tracking code and reset form
+      const newTrackingCode = generateTrackingCode();
       setFormData({
-        trackingcode: "",
+        trackingcode: newTrackingCode,
         fullname: "",
         emailaddress: "",
         contactnumber: "",
@@ -52,7 +54,7 @@ function BrgyClearance() {
       });
     } catch (err) {
       alert(
-        "Error creating record: " + err.response?.data?.message || err.message
+        "Error creating record: " + (err.response?.data?.message || err.message)
       );
     }
   };
