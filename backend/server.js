@@ -19,6 +19,19 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const PORT = process.env.PORT || 3000;
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'Server is running',
+    message: 'OABS Backend API',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      register: '/api/register'
+    }
+  });
+});
+
+
 // Register endpoint
 app.post('/api/register', async (req, res) => {
   try {
