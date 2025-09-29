@@ -52,7 +52,7 @@ function UserRegister() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://oabs-f7by.onrender.com/oabps/user/register", {
+      const response = await axios.post("https://oabs-f7by.onrender.com/api/register", {
         fullname: formData.fullname,
         username: formData.username,
         email: formData.email,

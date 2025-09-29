@@ -26,14 +26,14 @@ app.get('/oabps/user/register', (req, res) => {
     message: 'OABS Backend API',
     timestamp: new Date().toISOString(),
     endpoints: {
-      register: '/oabps/user/register'
+      register: '/api/register'
     }
   });
 });
 
 
 // Register endpoint
-app.post('/oabps/user/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
   try {
     const { fullname, email, username, password } = req.body;
 
