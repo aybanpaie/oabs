@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  ChevronDown,
+  ChevronRight,
+  User,
+  FileText,
+  CreditCard,
+  Library,
+  Menu,
+  FileDown,
+  House,
+} from "lucide-react";
 
 function UserRegister() {
   const navigate = useNavigate();
@@ -29,7 +40,12 @@ function UserRegister() {
     setError("");
 
     // Validation
-    if (!formData.fullname || !formData.username || !formData.password || !formData.email) {
+    if (
+      !formData.fullname ||
+      !formData.username ||
+      !formData.password ||
+      !formData.email
+    ) {
       setError("All fields are required!");
       return;
     }
@@ -52,12 +68,16 @@ function UserRegister() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://oabs-f7by.onrender.com/api/register", {
-        fullname: formData.fullname,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        "https://oabs-f7by.onrender.com/api/register",
+        {
+          fullname: formData.fullname,
+          email: formData.email,
+          username: formData.username,
+          
+          password: formData.password,
+        }
+      );
 
       if (response.data.success) {
         alert("Account created successfully! Please log in.");
@@ -69,7 +89,7 @@ function UserRegister() {
       } else {
         setError("Failed to create account. Please try again.");
       }
-      console.error("Registration error:", err);
+      
     } finally {
       setIsLoading(false);
     }

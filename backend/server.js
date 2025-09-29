@@ -86,7 +86,7 @@ app.post('/api/register', async (req, res) => {
 
     // Insert user into database
     const { data, error } = await supabase
-      .from('users')
+      .from('Owners')
       .insert([
         {
           fullname,
