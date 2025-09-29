@@ -154,7 +154,7 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Generate a simple token (you can use JWT for better security)
-    const token = Buffer.from(`${Owners.owner_id}:${Date.now()}`).toString("base64");
+    const token = Buffer.from(`${user.id}:${Date.now()}`).toString("base64");
 
     // Return user data (exclude password)
     res.status(200).json({
