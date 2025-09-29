@@ -22,10 +22,10 @@ const PORT = process.env.PORT || 3000;
 // Register endpoint
 app.post('/api/register', async (req, res) => {
   try {
-    const { fullname, username, email, password } = req.body;
+    const { fullname, email, username, password } = req.body;
 
     // Validation
-    if (!fullname || !username || !email || !password) {
+    if (!fullname || !email || !username || !password) { 
       return res.status(400).json({ 
         success: false, 
         error: 'All fields are required' 
@@ -41,7 +41,7 @@ app.post('/api/register', async (req, res) => {
 
     // Check if username already exists
     const { data: existingUsername } = await supabase
-      .from('users')
+      .from('Owners')
       .select('username')
       .eq('username', username)
       .single();
@@ -55,7 +55,7 @@ app.post('/api/register', async (req, res) => {
 
     // Check if email already exists
     const { data: existingEmail } = await supabase
-      .from('users')
+      .from('Owners')
       .select('email')
       .eq('email', email)
       .single();
@@ -77,10 +77,9 @@ app.post('/api/register', async (req, res) => {
       .insert([
         {
           fullname,
-          username,
           email,
-          password: hashedPassword,
-          created_at: new Date().toISOString()
+          username,
+          password: hashedPassword
         }
       ])
       .select();
@@ -97,10 +96,11 @@ app.post('/api/register', async (req, res) => {
       success: true, 
       message: 'Account created successfully',
       user: {
-        id: data[0].id,
+        owner_id: data[0].id,
         fullname: data[0].fullname,
-        username: data[0].username,
-        email: data[0].email
+        email: data[0].email,
+        username: data[0].username
+        
       }
     });
 
