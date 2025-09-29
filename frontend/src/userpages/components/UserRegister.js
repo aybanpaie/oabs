@@ -21,7 +21,7 @@ function UserRegister() {
       ...prev,
       [name]: value,
     }));
-    setError(""); // Clear error when user types
+    setError("");
   };
 
   const handleCreateAccount = async (e) => {
@@ -29,12 +29,7 @@ function UserRegister() {
     setError("");
 
     // Validation
-    if (
-      !formData.fullname ||
-      !formData.username ||
-      !formData.password ||
-      !formData.email
-    ) {
+    if (!formData.fullname || !formData.username || !formData.password || !formData.email) {
       setError("All fields are required!");
       return;
     }
@@ -57,7 +52,7 @@ function UserRegister() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/register", {
+      const response = await axios.post("https://oabs-f7by.onrender.com/api/register", {
         fullname: formData.fullname,
         username: formData.username,
         email: formData.email,
@@ -81,162 +76,160 @@ function UserRegister() {
   };
 
   return (
-    <>
-      <div className="min-vh-100 position-relative overflow-hidden">
-        <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
-        <div className="position-relative d-flex align-items-center justify-content-center min-vh-100 px-4 login-container">
-          <div className="card shadow-lg login-card">
-            <div className="card-body p-4">
-              <div className="text-center mb-4">
-                <div className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle border border-4 login-logo">
-                  <div className="logo-circle w-100 h-100">
-                    <div className="logo-inner w-50 h-50"></div>
-                  </div>
+    <div className="min-vh-100 position-relative overflow-hidden">
+      <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
+      <div className="position-relative d-flex align-items-center justify-content-center min-vh-100 px-4 login-container">
+        <div className="card shadow-lg login-card">
+          <div className="card-body p-4">
+            <div className="text-center mb-4">
+              <div className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle border border-4 login-logo">
+                <div className="logo-circle w-100 h-100">
+                  <div className="logo-inner w-50 h-50"></div>
                 </div>
-                <h4 className="fw-semibold text-dark mb-1">
-                  Create a new Account
-                </h4>
-                <p className="text-muted mb-4" style={{ fontSize: "15px" }}>
-                  Online Business Permit & Licensing System
-                </p>
+              </div>
+              <h4 className="fw-semibold text-dark mb-1">
+                Create a new Account
+              </h4>
+              <p className="text-muted mb-4" style={{ fontSize: "14px" }}>
+                Online Business Permit & Licensing System
+              </p>
+            </div>
+
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateAccount}>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  name="fullname"
+                  placeholder="Fullname"
+                  value={formData.fullname}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="email"
+                  className="form-control"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control"
+                  name="retypePassword"
+                  placeholder="Retype Password"
+                  value={formData.retypePassword}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isLoading}
+                />
               </div>
 
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleCreateAccount}>
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    name="fullname"
-                    placeholder="Fullname"
-                    value={formData.fullname}   
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="mb-3">
-                  <input
-                    type="email"
-                    className="form-control form-control-lg"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    className="form-control form-control-lg"
-                    name="username"
-                    placeholder="Username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="mb-3">
-                  <input
-                    type="password"
-                    className="form-control form-control-lg"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="mb-3">
-                  <input
-                    type="password"
-                    className="form-control form-control-lg"
-                    name="retypePassword"
-                    placeholder="Retype Password"
-                    value={formData.retypePassword}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div className="form-check mb-4">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="agreePolicy"
-                    checked={agreeToPolicy}
-                    onChange={(e) => setAgreeToPolicy(e.target.checked)}
-                    disabled={isLoading}
-                  />
-                  <label
-                    className="form-check-label"
-                    htmlFor="agreePolicy"
-                    style={{ fontSize: "15px" }}
-                  >
-                    I agree and accept to the{" "}
-                    <a
-                      href="#"
-                      className="text-decoration-none fw-bold"
-                      style={{ color: "#dc3545" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        alert("Privacy Policy would be displayed here.");
-                      }}
-                    >
-                      PRIVACY POLICY
-                    </a>
-                  </label>
-                </div>
-                <div className="d-flex gap-3">
-                  <Link
-                    to="/loginfinal/user"
-                    className="btn border flex-fill"
-                    style={{
-                      color: "#dc3545",
-                      borderColor: "#dc3545",
-                    }}
-                    onMouseOver={(e) => {
-                      e.target.style.backgroundColor = "#dc3545";
-                      e.target.style.color = "white";
-                    }}
-                    onMouseOut={(e) => {
-                      e.target.style.backgroundColor = "transparent";
-                      e.target.style.color = "#dc3545";
+              <div className="form-check mb-4">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="agreePolicy"
+                  checked={agreeToPolicy}
+                  onChange={(e) => setAgreeToPolicy(e.target.checked)}
+                  disabled={isLoading}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="agreePolicy"
+                  style={{ fontSize: "14px" }}
+                >
+                  I agree and accept to the{" "}
+                  <a
+                    href="#"
+                    className="text-decoration-none fw-bold"
+                    style={{ color: "#dc3545" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      alert("Privacy Policy would be displayed here.");
                     }}
                   >
-                    CANCEL
-                  </Link>
-                  <button
-                    type="submit"
-                    className="btn text-white flex-fill"
-                    style={{ backgroundColor: "#dc3545" }}
-                    onMouseOver={(e) =>
-                      (e.target.style.backgroundColor = "#bb2d3b")
-                    }
-                    onMouseOut={(e) =>
-                      (e.target.style.backgroundColor = "#dc3545")
-                    }
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "CREATING..." : "CREATE ACCOUNT"}
-                  </button>
-                </div>
-              </form>
-            </div>
+                    PRIVACY POLICY
+                  </a>
+                </label>
+              </div>
+              <div className="d-flex gap-3">
+                <Link
+                  to="/loginfinal/user"
+                  className="btn border flex-fill"
+                  style={{
+                    color: "#dc3545",
+                    borderColor: "#dc3545",
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.backgroundColor = "#dc3545";
+                    e.target.style.color = "white";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = "transparent";
+                    e.target.style.color = "#dc3545";
+                  }}
+                >
+                  CANCEL
+                </Link>
+                <button
+                  type="submit"
+                  className="btn text-white flex-fill"
+                  style={{ backgroundColor: "#dc3545" }}
+                  onMouseOver={(e) =>
+                    (e.target.style.backgroundColor = "#bb2d3b")
+                  }
+                  onMouseOut={(e) =>
+                    (e.target.style.backgroundColor = "#dc3545")
+                  }
+                  disabled={isLoading}
+                >
+                  {isLoading ? "CREATING..." : "CREATE ACCOUNT"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
