@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function KoronadalLogin() {
+function UserLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,7 +10,6 @@ export default function KoronadalLogin() {
     e.preventDefault();
     console.log("Login attempted with:", { username, password });
   };
-
   return (
     <>
       <div className="min-vh-100 position-relative overflow-hidden">
@@ -99,3 +98,5 @@ export default function KoronadalLogin() {
     </>
   );
 }
+
+export default UserLogin;

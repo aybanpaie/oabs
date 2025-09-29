@@ -227,7 +227,7 @@ function MainSideBar({ children }) {
 
           {/* Main Content */}
           <div
-            className={`flex-grow-1 mmain-content bg-color-sixthia ${
+            className={`flex-grow-1 mmain-content bg-dark bg-opacity-10 ${
               !sidebarOpen ? "expanded" : ""
             }`}
           >

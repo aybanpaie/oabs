@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export default function KoronadalRegister() {
+function UserRegister() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    fullname: "",
     username: "",
     password: "",
     retypePassword: "",
     email: "",
   });
   const [agreeToPolicy, setAgreeToPolicy] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -16,23 +21,63 @@ export default function KoronadalRegister() {
       ...prev,
       [name]: value,
     }));
+    setError(""); // Clear error when user types
   };
 
-  const handleCreateAccount = (e) => {
+  const handleCreateAccount = async (e) => {
     e.preventDefault();
+    setError("");
+
+    // Validation
+    if (
+      !formData.fullname ||
+      !formData.username ||
+      !formData.password ||
+      !formData.email
+    ) {
+      setError("All fields are required!");
+      return;
+    }
 
     if (formData.password !== formData.retypePassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long!");
       return;
     }
 
     if (!agreeToPolicy) {
-      alert("Please agree to the Privacy Policy to continue.");
+      setError("Please agree to the Privacy Policy to continue.");
       return;
     }
 
-    console.log("Account creation attempted with:", formData);
-    alert("Account created successfully!");
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/register", {
+        fullname: formData.fullname,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.data.success) {
+        alert("Account created successfully! Please log in.");
+        navigate("/loginfinal/user");
+      }
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
+      console.error("Registration error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,57 +88,84 @@ export default function KoronadalRegister() {
           <div className="card shadow-lg login-card">
             <div className="card-body p-4">
               <div className="text-center mb-4">
-                <div className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle border border-4 login-logo"></div>
+                <div className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle border border-4 login-logo">
+                  <div className="logo-circle w-100 h-100">
+                    <div className="logo-inner w-50 h-50"></div>
+                  </div>
+                </div>
                 <h4 className="fw-semibold text-dark mb-1">
                   Create a new Account
                 </h4>
-                <p className="text-muted mb-4" style={{ fontSize: "14px" }}>
+                <p className="text-muted mb-4" style={{ fontSize: "15px" }}>
                   Online Business Permit & Licensing System
                 </p>
               </div>
-              <div>
+
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleCreateAccount}>
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    name="fullname"
+                    placeholder="Fullname"
+                    value={formData.fullname}   
+                    onChange={handleInputChange}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
                 <div className="mb-3">
                   <input
                     type="email"
-                    className="form-control"
+                    className="form-control form-control-lg"
                     name="email"
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="mb-3">
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-lg"
                     name="username"
                     placeholder="Username"
                     value={formData.username}
                     onChange={handleInputChange}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="mb-3">
                   <input
                     type="password"
-                    className="form-control"
+                    className="form-control form-control-lg"
                     name="password"
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleInputChange}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="mb-3">
                   <input
                     type="password"
-                    className="form-control"
+                    className="form-control form-control-lg"
                     name="retypePassword"
                     placeholder="Retype Password"
                     value={formData.retypePassword}
                     onChange={handleInputChange}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -104,11 +176,12 @@ export default function KoronadalRegister() {
                     id="agreePolicy"
                     checked={agreeToPolicy}
                     onChange={(e) => setAgreeToPolicy(e.target.checked)}
+                    disabled={isLoading}
                   />
                   <label
                     className="form-check-label"
                     htmlFor="agreePolicy"
-                    style={{ fontSize: "14px" }}
+                    style={{ fontSize: "15px" }}
                   >
                     I agree and accept to the{" "}
                     <a
@@ -153,11 +226,12 @@ export default function KoronadalRegister() {
                     onMouseOut={(e) =>
                       (e.target.style.backgroundColor = "#dc3545")
                     }
+                    disabled={isLoading}
                   >
-                    CREATE ACCOUNT
+                    {isLoading ? "CREATING..." : "CREATE ACCOUNT"}
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -165,3 +239,5 @@ export default function KoronadalRegister() {
     </>
   );
 }
+
+export default UserRegister;

@@ -4,6 +4,9 @@ import Loginfinal from './userpages/components/Loginfinal'
 import Creatw from './userpages/components/Creatw'
 import Forgot from './userpages/components/Forgot'
 
+import UserRegister from './userpages/components/UserRegister'
+import UserLogin from './userpages/components/UserLogin'
+
 import LoginMain from './mainadminpage/components/LoginMain'
 import DashMain from './mainadminpage/DashboardMain'
 import MainDoc from './mainadminpage/Docoment'
@@ -45,6 +48,9 @@ function App() {
         <Route path='/loginfinal/user' element={<Loginfinal/>}></Route>
         <Route path='/create/user' element={<Creatw/>}></Route>
         <Route path='/forgot/user' element={<Forgot/>}></Route>
+
+        <Route path='/oabps/user/register' element={<UserRegister/>}></Route>
+        <Route path='/oabps/user/login' element={<UserLogin/>}></Route>
 
         <Route path='/loginfinal/main' element={<LoginMain/>}></Route>
         <Route path='/main/dashboard' element={<DashMain/>}></Route>

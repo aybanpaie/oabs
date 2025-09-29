@@ -1,46 +1,116 @@
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:3000',
+    'https://oabsfront.onrender.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json());
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const PORT = process.env.PORT || 3000;
 
-app.post('/create', async (req, res) => {
-  console.log("=== CREATE REQUEST ===");
-  console.log("Incoming data:", req.body);
-  console.log("Supabase URL:", process.env.SUPABASE_URL);
-  console.log("Supabase Key exists:", !!process.env.SUPABASE_KEY);
-  
+// Register endpoint
+app.post('/api/register', async (req, res) => {
   try {
-    const { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose } = req.body;
-    
-    // Validate required fields
-    if (!trackingcode || !fullname) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    const { fullname, username, email, password } = req.body;
+
+    // Validation
+    if (!fullname || !username || !email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'All fields are required' 
+      });
     }
-    
-    console.log("Attempting to insert:", { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose });
-    
-    const { data, error } = await supabase.from('Barangay Clearance').insert([
-      { trackingcode, fullname, emailaddress, contactnumber, province, city, barangay, purpose }
-    ]);
+
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Password must be at least 6 characters long' 
+      });
+    }
+
+    // Check if username already exists
+    const { data: existingUsername } = await supabase
+      .from('users')
+      .select('username')
+      .eq('username', username)
+      .single();
+
+    if (existingUsername) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Username already exists' 
+      });
+    }
+
+    // Check if email already exists
+    const { data: existingEmail } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingEmail) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Email already exists' 
+      });
+    }
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert user into database
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          fullname,
+          username,
+          email,
+          password: hashedPassword,
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select();
 
     if (error) {
-      console.error("Supabase error:", error);
-      throw error;
+      console.error('Supabase error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Failed to create account. Please try again.' 
+      });
     }
-    
-    console.log("Insert successful:", data);
-    res.status(201).json({ message: "Record created successfully", data });
+
+    res.status(201).json({ 
+      success: true, 
+      message: 'Account created successfully',
+      user: {
+        id: data[0].id,
+        fullname: data[0].fullname,
+        username: data[0].username,
+        email: data[0].email
+      }
+    });
+
   } catch (err) {
-    console.error("Full error:", err);
-    res.status(500).json({ message: 'Database error', details: err.message });
+    console.error('Registration error:', err);
+    res.status(500).json({ 
+      success: false, 
+      error: 'An error occurred during registration' 
+    });
   }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
