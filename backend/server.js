@@ -162,7 +162,7 @@ app.post("/api/login", async (req, res) => {
       message: "Login successful",
       token: token,
       user: {
-        owner_id: user.id,
+        owner_id: user.owner_id,
         fullname: user.fullname,
         email: user.email,
         username: user.username,

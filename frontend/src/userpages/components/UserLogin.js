@@ -42,7 +42,7 @@ function UserLogin() {
       } else {
         setError("Login failed. Please try again.");
       }
-      console.error("Login error:", err);
+      
     } finally {
       setIsLoading(false);
     }
