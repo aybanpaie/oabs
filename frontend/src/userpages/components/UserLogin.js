@@ -1,15 +1,53 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 function UserLogin() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login attempted with:", { username, password });
+    setError("");
+
+    if (!username || !password) {
+      setError("Please enter both username/email and password");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post("https://oabs-f7by.onrender.com/api/login", {
+        username: username,
+        password: password,
+      });
+
+      if (response.data.success) {
+        // Store user data in localStorage
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("token", response.data.token);
+        
+        // Redirect to dashboard
+        navigate("/dasboard");
+      }
+    } catch (err) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Login failed. Please try again.");
+      }
+      console.error("Login error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <>
       <div className="min-vh-100 position-relative overflow-hidden">
@@ -28,6 +66,13 @@ function UserLogin() {
                 </h4>
                 <h4 className="fw-semibold text-dark mb-4">Licensing System</h4>
               </div>
+
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <input
@@ -35,35 +80,47 @@ function UserLogin() {
                     className="form-control"
                     placeholder="Username or Email"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      setError("");
+                    }}
                     required
+                    disabled={isLoading}
                   />
                 </div>
-                <div className="mb-3">
+                <div className="mb-3 position-relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     className="form-control"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
                     required
+                    disabled={isLoading}
+                    style={{ paddingRight: "40px" }}
                   />
+                  <button
+                    type="button"
+                    className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                    style={{
+                      border: "none",
+                      background: "none",
+                      padding: "0 10px",
+                      color: "#6c757d",
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                 </div>
-                <div className="form-check mb-3">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="showPassword"
-                    checked={showPassword}
-                    onChange={(e) => setShowPassword(e.target.checked)}
-                  />
-                  <label className="form-check-label" htmlFor="showPassword">
-                    Show Password
-                  </label>
-                </div>
+                
                 <div className="d-flex justify-content-between mb-4">
                   <Link
-                    to="/create/user"
+                    to="/oabps/user/register"
                     className="text-decoration-none"
                     style={{ color: "#dc3545" }}
                   >
@@ -77,8 +134,8 @@ function UserLogin() {
                     Forgot Password?
                   </Link>
                 </div>
-                <Link
-                  to="/dasboard"
+                <button
+                  type="submit"
                   className="btn w-100 text-white fw-medium"
                   style={{ backgroundColor: "#dc3545" }}
                   onMouseOver={(e) =>
@@ -87,9 +144,10 @@ function UserLogin() {
                   onMouseOut={(e) =>
                     (e.target.style.backgroundColor = "#dc3545")
                   }
+                  disabled={isLoading}
                 >
-                  LOGIN
-                </Link>
+                  {isLoading ? "LOGGING IN..." : "LOGIN"}
+                </button>
               </form>
             </div>
           </div>
