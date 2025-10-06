@@ -1,14 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import MainSideBar from "../includes/MainSideBar";
 import { FileText, FolderOpen, Users, Bell } from "lucide-react";
 
 function MainDashboard() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("User");
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem("user");
+    
+    if (!userData) {
+      // If no user data, redirect to login
+      navigate("/oabps/main/login");
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userData);
+      // Set username from user data
+      setUsername(user.username || user.fullname || "User");
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      navigate("/oabps/main/login");
+    }
+  }, [navigate]);
+
   return (
     <>
       <MainSideBar>
         <div className="p-4">
           {/* Stats Cards */}
-          <h2 className="display-5 fw-bold text-dark mb-2">Welcome, USER!</h2>
+          <h2 className="display-5 fw-bold text-dark mb-2">Welcome, {username}!</h2>
           <div className="row mb-4">
             <div className="col-md-3 col-sm-6 mb-3">
               <div className="card mcard-stat h-100 text-center p-4">
