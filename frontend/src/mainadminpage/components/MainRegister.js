@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
-function UserRegister() {
+function MainRegister() {
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullname: "",
@@ -61,7 +62,7 @@ function UserRegister() {
 
     try {
       const response = await axios.post(
-        "https://oabs-f7by.onrender.com/api/user/register",
+        "https://oabs-f7by.onrender.com/api/register",
         {
           fullname: formData.fullname,
           email: formData.email,
@@ -84,12 +85,12 @@ function UserRegister() {
       setIsLoading(false);
     }
   };
-
   return (
     <>
       <div className="min-vh-100 position-relative overflow-hidden">
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
-        <div className="position-relative d-flex align-items-center justify-content-center min-vh-100 px-4 login-container">
+        <div className="position-relative d-flex flex-column align-items-center justify-content-center min-vh-100 px-4 login-container">
+          <h4 className="fw-semibold text-dark mb-1">MAIN ADMIN</h4>
           <div className="card shadow-lg login-card">
             <div className="card-body p-4">
               <div className="text-center mb-4">
@@ -238,7 +239,7 @@ function UserRegister() {
                 </div>
                 <div className="d-flex gap-3">
                   <Link
-                    to="/oabps/user/login"
+                    to="/oabps/main/login"
                     className="btn border flex-fill"
                     style={{
                       color: "#dc3545",
@@ -276,7 +277,7 @@ function UserRegister() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default UserRegister;
+export default MainRegister

@@ -1,11 +1,16 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom'
 
-import Loginfinal from './userpages/components/Loginfinal'
-import Creatw from './userpages/components/Creatw'
-import Forgot from './userpages/components/Forgot'
+import MainLogin from './mainadminpage/components/MainLogin'
+import MainRegister from './mainadminpage/components/MainRegister'
 
 import UserRegister from './userpages/components/UserRegister'
 import UserLogin from './userpages/components/UserLogin'
+
+// --------------------------------------------------------
+
+import Loginfinal from './userpages/components/Loginfinal'
+import Creatw from './userpages/components/Creatw'
+import Forgot from './userpages/components/Forgot'
 
 import LoginMain from './mainadminpage/components/LoginMain'
 import DashMain from './mainadminpage/DashboardMain'
@@ -45,12 +50,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/loginfinal/user' element={<Loginfinal/>}></Route>
-        <Route path='/create/user' element={<Creatw/>}></Route>
-        <Route path='/forgot/user' element={<Forgot/>}></Route>
+
+        <Route path='/oabps/main/login' element={<MainLogin/>}></Route>
+        <Route path='/oabps/main/register' element={<MainRegister/>}></Route>
 
         <Route path='/oabps/user/register' element={<UserRegister/>}></Route>
         <Route path='/oabps/user/login' element={<UserLogin/>}></Route>
+
+        {/* ----------------------------------------------------------- */}
+
+        <Route path='/loginfinal/user' element={<Loginfinal/>}></Route>
+        <Route path='/create/user' element={<Creatw/>}></Route>
+        <Route path='/forgot/user' element={<Forgot/>}></Route>
 
         <Route path='/loginfinal/main' element={<LoginMain/>}></Route>
         <Route path='/main/dashboard' element={<DashMain/>}></Route>

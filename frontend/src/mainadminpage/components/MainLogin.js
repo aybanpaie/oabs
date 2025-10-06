@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
-function UserLogin() {
+function MainLogin() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
@@ -23,7 +23,7 @@ function UserLogin() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://oabs-f7by.onrender.com/api/user/login", {
+      const response = await axios.post("https://oabs-f7by.onrender.com/api/login", {
         username: username,
         password: password,
       });
@@ -47,12 +47,12 @@ function UserLogin() {
       setIsLoading(false);
     }
   };
-
   return (
     <>
       <div className="min-vh-100 position-relative overflow-hidden">
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25"></div>
-        <div className="position-relative d-flex align-items-center justify-content-center min-vh-100 px-4 login-container">
+        <div className="position-relative d-flex flex-column align-items-center justify-content-center min-vh-100 px-4 login-container">
+          <h4 className="fw-semibold text-dark mb-1">MAIN ADMIN</h4>
           <div className="card shadow-lg login-card">
             <div className="card-body p-4">
               <div className="text-center mb-4">
@@ -118,22 +118,7 @@ function UserLogin() {
                   </button>
                 </div>
                 
-                <div className="d-flex justify-content-between mb-4">
-                  <Link
-                    to="/oabps/user/register"
-                    className="text-decoration-none"
-                    style={{ color: "#dc3545" }}
-                  >
-                    Create a new account
-                  </Link>
-                  <Link
-                    to="/forgot/user"
-                    className="text-decoration-none"
-                    style={{ color: "#dc3545" }}
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
+                
                 <button
                   type="submit"
                   className="btn w-100 text-white fw-medium"
@@ -157,4 +142,4 @@ function UserLogin() {
   );
 }
 
-export default UserLogin;
+export default MainLogin;

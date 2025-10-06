@@ -8,8 +8,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
+      "http://localhost:3000",    
       "https://oabsfront.onrender.com",
     ],
     credentials: true,
@@ -24,8 +23,8 @@ const supabase = createClient(
 );
 const PORT = process.env.PORT || 3000;
 
-// Register endpoint
-app.post("/api/register", async (req, res) => {
+// Register user endpoint
+app.post("/api/user/register", async (req, res) => {
   try {
     const { fullname, email, username, password } = req.body;
 
@@ -116,8 +115,8 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// Login endpoint
-app.post("/api/login", async (req, res) => {
+// Login user endpoint
+app.post("/api/user/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
