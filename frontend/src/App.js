@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom'
 import MainLogin from './mainadminpage/components/MainLogin'
 import MainRegister from './mainadminpage/components/MainRegister'
 
+import MainDashboard from './mainadminpage/MainDashboard'
+
 import UserRegister from './userpages/components/UserRegister'
 import UserLogin from './userpages/components/UserLogin'
 
@@ -53,6 +55,8 @@ function App() {
 
         <Route path='/oabps/main/login' element={<MainLogin/>}></Route>
         <Route path='/oabps/main/register' element={<MainRegister/>}></Route>
+
+        <Route path='/oabps/main/dashboard' element={<MainDashboard/>}></Route>
 
         <Route path='/oabps/user/register' element={<UserRegister/>}></Route>
         <Route path='/oabps/user/login' element={<UserLogin/>}></Route>

@@ -23,7 +23,7 @@ function MainLogin() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://oabs-f7by.onrender.com/api/login", {
+      const response = await axios.post("https://oabs-f7by.onrender.com/api/main/login", {
         username: username,
         password: password,
       });
@@ -34,7 +34,7 @@ function MainLogin() {
         localStorage.setItem("token", response.data.token);
         
         // Redirect to dashboard
-        navigate("/dasboard");
+        navigate("/oabps/main/dashboard");
       }
     } catch (err) {
       if (err.response?.data?.error) {

@@ -62,7 +62,7 @@ function MainRegister() {
 
     try {
       const response = await axios.post(
-        "https://oabs-f7by.onrender.com/api/register",
+        "https://oabs-f7by.onrender.com/api/main/register",
         {
           fullname: formData.fullname,
           email: formData.email,
@@ -73,7 +73,7 @@ function MainRegister() {
 
       if (response.data.success) {
         alert("Account created successfully! Please log in.");
-        navigate("/oabps/user/login");
+        navigate("/oabps/main/login");
       }
     } catch (err) {
       if (err.response?.data?.error) {
