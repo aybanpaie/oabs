@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
@@ -22,6 +25,27 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 const PORT = process.env.PORT || 3000;
+
+// Configure multer for file uploads
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
 
 // Register main admin endpoint
 app.post("/api/main/register", async (req, res) => {
@@ -524,6 +548,64 @@ app.delete("/api/category/delete/:id", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "An error occurred while deleting category",
+    });
+  }
+});
+
+// Add document endpoint with file upload
+app.post("/api/document/add", upload.single("document"), async (req, res) => {
+  try {
+    const { categoryId, description, createdBy } = req.body;
+    const file = req.file;
+
+    // Validation
+    if (!categoryId || !description || !createdBy || !file) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Insert document into database
+    const { data, error } = await supabase
+      .from("Documents")
+      .insert([
+        {
+          category_id: categoryId,
+          document_name: file.originalname,
+          document_path: file.path,
+          description: description,
+          created_by: createdBy,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      // Delete uploaded file if database insert fails
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      return res.status(500).json({
+        success: false,
+        message: "Failed to add document. Please try again.",
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Document added successfully",
+      document: data[0],
+    });
+  } catch (err) {
+    console.error("Add document error:", err);
+    // Delete uploaded file if error occurs
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding document",
     });
   }
 });

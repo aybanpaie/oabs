@@ -1,24 +1,20 @@
-import { Plus, Trash, Pencil, Download } from "lucide-react";
+import { Plus, Trash, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainSideBar from "../includes/MainSideBar";
 import axios from "axios";
 
 function MainDocCategory() {
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [editingCategory, setEditingCategory] = useState(null);
 
-    
-      const [showModal, setShowModal] = useState(false);
-      const [showEditModal, setShowEditModal] = useState(false);
-      const [categoryName, setCategoryName] = useState("");
-      const [description, setDescription] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-      const [categories, setCategories] = useState([]);
-      const [editingCategory, setEditingCategory] = useState(null);
-
-      
-
-      const navigate = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("User");
 
   useEffect(() => {
@@ -46,7 +42,9 @@ function MainDocCategory() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://oabs-f7by.onrender.com/api/category/all");
+      const response = await axios.get(
+        "https://oabs-f7by.onrender.com/api/category/all"
+      );
       if (response.data.success) {
         setCategories(response.data.categories);
       }
@@ -166,7 +164,10 @@ function MainDocCategory() {
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4 className="mb-0">Document Category</h4>
               <div>
-                <button className="btn btn-outline-secondary me-2" onClick={handleAddCategory}>
+                <button
+                  className="btn btn-outline-secondary me-2"
+                  onClick={handleAddCategory}
+                >
                   <Plus /> Add Category
                 </button>
               </div>
@@ -188,7 +189,9 @@ function MainDocCategory() {
                   <tbody>
                     {categories.length === 0 ? (
                       <tr>
-                        <td colSpan="5" className="text-center">No categories found</td>
+                        <td colSpan="5" className="text-center">
+                          No categories found
+                        </td>
                       </tr>
                     ) : (
                       categories.map((category, index) => (
@@ -196,12 +199,20 @@ function MainDocCategory() {
                           <td>{index + 1}</td>
                           <td>{category.category_name}</td>
                           <td>{category.description}</td>
-                          <td>{new Date(category.created_at).toLocaleDateString()}</td>
                           <td>
-                            <button className="btn btn-sm" onClick={() => handleEdit(category)}>
+                            {new Date(category.created_at).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => handleEdit(category)}
+                            >
                               <Pencil className="text-primary" />
                             </button>
-                            <button className="btn btn-sm" onClick={() => handleDelete(category.category_id)}>
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => handleDelete(category.category_id)}
+                            >
                               <Trash className="text-danger" />
                             </button>
                           </td>
@@ -217,12 +228,20 @@ function MainDocCategory() {
 
         {/* Add Category Modal */}
         {showModal && (
-          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">Add New Category</h5>
-                  <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseModal}
+                  ></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body">
@@ -232,7 +251,9 @@ function MainDocCategory() {
                       </div>
                     )}
                     <div className="mb-3">
-                      <label htmlFor="categoryName" className="form-label">Category Name</label>
+                      <label htmlFor="categoryName" className="form-label">
+                        Category Name
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -244,7 +265,9 @@ function MainDocCategory() {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="description" className="form-label">Description</label>
+                      <label htmlFor="description" className="form-label">
+                        Description
+                      </label>
                       <textarea
                         className="form-control"
                         id="description"
@@ -257,10 +280,19 @@ function MainDocCategory() {
                     </div>
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={loading}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseModal}
+                      disabled={loading}
+                    >
                       Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={loading}
+                    >
                       {loading ? "Adding..." : "Add Category"}
                     </button>
                   </div>
@@ -272,12 +304,20 @@ function MainDocCategory() {
 
         {/* Edit Category Modal */}
         {showEditModal && (
-          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">Edit Category</h5>
-                  <button type="button" className="btn-close" onClick={handleCloseEditModal}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseEditModal}
+                  ></button>
                 </div>
                 <form onSubmit={handleUpdate}>
                   <div className="modal-body">
@@ -287,7 +327,9 @@ function MainDocCategory() {
                       </div>
                     )}
                     <div className="mb-3">
-                      <label htmlFor="editCategoryName" className="form-label">Category Name</label>
+                      <label htmlFor="editCategoryName" className="form-label">
+                        Category Name
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -299,7 +341,9 @@ function MainDocCategory() {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="editDescription" className="form-label">Description</label>
+                      <label htmlFor="editDescription" className="form-label">
+                        Description
+                      </label>
                       <textarea
                         className="form-control"
                         id="editDescription"
@@ -312,10 +356,19 @@ function MainDocCategory() {
                     </div>
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={handleCloseEditModal} disabled={loading}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseEditModal}
+                      disabled={loading}
+                    >
                       Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={loading}
+                    >
                       {loading ? "Updating..." : "Update Category"}
                     </button>
                   </div>
@@ -326,7 +379,7 @@ function MainDocCategory() {
         )}
       </MainSideBar>
     </>
-  )
+  );
 }
 
-export default MainDocCategory
+export default MainDocCategory;
