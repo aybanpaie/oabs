@@ -618,7 +618,13 @@ app.get("/api/document/all", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("Documents")
-      .select("*")
+      .select(`
+        *,
+        Admins (
+          username,
+          fullname
+        )
+      `)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -629,9 +635,15 @@ app.get("/api/document/all", async (req, res) => {
       });
     }
 
+    // Transform data to include admin username
+    const transformedData = data.map((doc) => ({
+      ...doc,
+      created_by_name: doc.Admins?.username || doc.Admins?.fullname || "Unknown",
+    }));
+
     res.status(200).json({
       success: true,
-      documents: data,
+      documents: transformedData,
     });
   } catch (err) {
     console.error("Fetch documents error:", err);

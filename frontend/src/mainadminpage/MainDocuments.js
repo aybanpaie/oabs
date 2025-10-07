@@ -326,7 +326,7 @@ function MainDocuments() {
                           <td>{doc.document_name}</td>
                           <td>{doc.description}</td>
                           <td>{new Date(doc.created_at).toLocaleDateString()}</td>
-                          <td>{doc.created_by}</td>
+                          <td>{doc.created_by_name || "Unknown"}</td>
                           <td>
                             <button
                               className="btn btn-sm"
