@@ -613,4 +613,193 @@ app.post("/api/document/add", upload.single("document"), async (req, res) => {
   }
 });
 
+// Get all documents endpoint
+app.get("/api/document/all", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("Documents")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch documents",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      documents: data,
+    });
+  } catch (err) {
+    console.error("Fetch documents error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching documents",
+    });
+  }
+});
+
+// Update document endpoint
+app.put("/api/document/update/:id", upload.single("document"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { categoryId, description } = req.body;
+    const file = req.file;
+
+    // Validation
+    if (!categoryId || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Category and description are required",
+      });
+    }
+
+    let documentPath;
+
+    // If new file is uploaded, upload to Supabase Storage
+    if (file) {
+      // Get old document to delete from storage
+      const { data: oldDoc } = await supabase
+        .from("Documents")
+        .select("document_path")
+        .eq("document_id", id)
+        .single();
+
+      // Generate unique filename
+      const fileExt = file.originalname.split(".").pop();
+      const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`;
+      const filePath = `documents/${fileName}`;
+
+      // Upload new file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("documents")
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Supabase storage error:", uploadError);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload document. Please try again.",
+        });
+      }
+
+      // Get public URL for the uploaded file
+      const { data: publicUrlData } = supabase.storage
+        .from("documents")
+        .getPublicUrl(filePath);
+
+      documentPath = publicUrlData.publicUrl;
+
+      // Delete old file from storage if exists
+      if (oldDoc && oldDoc.document_path) {
+        const oldFilePath = oldDoc.document_path.split("/documents/")[1];
+        if (oldFilePath) {
+          await supabase.storage.from("documents").remove([`documents/${oldFilePath}`]);
+        }
+      }
+    }
+
+    // Update document in database
+    const updateData = {
+      category_id: categoryId,
+      description: description,
+    };
+
+    if (documentPath) {
+      updateData.document_path = documentPath;
+      if (file) {
+        updateData.document_name = file.originalname;
+      }
+    }
+
+    const { data, error } = await supabase
+      .from("Documents")
+      .update(updateData)
+      .eq("document_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase database error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update document. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Document updated successfully",
+      document: data[0],
+    });
+  } catch (err) {
+    console.error("Update document error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating document",
+    });
+  }
+});
+
+// Delete document endpoint
+app.delete("/api/document/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { documentPath } = req.body;
+
+    // Delete document from database
+    const { data, error } = await supabase
+      .from("Documents")
+      .delete()
+      .eq("document_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase database error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete document. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    // Delete file from Supabase Storage
+    if (documentPath) {
+      const filePath = documentPath.split("/documents/")[1];
+      if (filePath) {
+        await supabase.storage.from("documents").remove([`documents/${filePath}`]);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Document deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete document error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting document",
+    });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
