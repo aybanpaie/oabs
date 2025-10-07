@@ -538,11 +538,11 @@ app.delete("/api/category/delete/:id", async (req, res) => {
 // Add document endpoint with file upload
 app.post("/api/document/add", upload.single("document"), async (req, res) => {
   try {
-    const { categoryId, description, createdBy } = req.body;
+    const { categoryId, description, adminId } = req.body;
     const file = req.file;
 
     // Validation
-    if (!categoryId || !description || !createdBy || !file) {
+    if (!categoryId || !description || !adminId || !file) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -584,7 +584,7 @@ app.post("/api/document/add", upload.single("document"), async (req, res) => {
           document_name: file.originalname,
           document_path: publicUrlData.publicUrl,
           description: description,
-          created_by: createdBy,
+          created_by: adminId, // Foreign key to Admins table
         },
       ])
       .select();

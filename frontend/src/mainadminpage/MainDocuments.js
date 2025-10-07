@@ -4,23 +4,22 @@ import { useNavigate } from "react-router-dom";
 import MainSideBar from "../includes/MainSideBar";
 import axios from "axios";
 
-
 function MainDocuments() {
+  const [searchName, setSearchName] = useState("");
+  const [searchTags, setSearchTags] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
+  const [documentFile, setDocumentFile] = useState(null);
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const [searchName, setSearchName] = useState("");
-      const [searchTags, setSearchTags] = useState("");
-      const [selectedCategory, setSelectedCategory] = useState("");
-      const [showModal, setShowModal] = useState(false);
-      const [categories, setCategories] = useState([]);
-      const [categoryId, setCategoryId] = useState("");
-      const [documentFile, setDocumentFile] = useState(null);
-      const [description, setDescription] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-
-      const navigate = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("User");
   const [createdBy, setCreatedBy] = useState("");
+  const [adminId, setAdminId] = useState(null);
 
   useEffect(() => {
     // Get user data from localStorage
@@ -34,9 +33,10 @@ function MainDocuments() {
 
     try {
       const user = JSON.parse(userData);
-      // Set username from user data
+      // Set username and admin_id from user data
       setUsername(user.username || user.fullname || "User");
       setCreatedBy(user.username || user.fullname || "User");
+      setAdminId(user.admin_id); // Store admin ID for foreign key
     } catch (error) {
       console.error("Error parsing user data:", error);
       navigate("/oabps/main/login");
@@ -48,7 +48,9 @@ function MainDocuments() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://oabs-f7by.onrender.com/api/category/all");
+      const response = await axios.get(
+        "https://oabs-f7by.onrender.com/api/category/all"
+      );
       if (response.data.success) {
         setCategories(response.data.categories);
       }
@@ -83,7 +85,7 @@ function MainDocuments() {
       formData.append("categoryId", categoryId);
       formData.append("document", documentFile);
       formData.append("description", description);
-      formData.append("createdBy", createdBy);
+      formData.append("adminId", adminId); // Send admin ID instead of name
 
       const response = await axios.post(
         "https://oabs-f7by.onrender.com/api/document/add",
@@ -112,18 +114,20 @@ function MainDocuments() {
     <>
       <MainSideBar>
         <div className="container-fluid p-4">
-            
           <div className="bg-light p-4 border-bottom text-center mb-4 shadow-sm">
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4 className="mb-0">Documents</h4>
               <div>
-                <button className="btn btn-outline-secondary me-2" onClick={handleAddDocument}>
+                <button
+                  className="btn btn-outline-secondary me-2"
+                  onClick={handleAddDocument}
+                >
                   <Plus /> Add Document
                 </button>
               </div>
             </div>
-            <hr className="my-0"/>
+            <hr className="my-0" />
             <div className="bg-light p-4 border-bottom text-center mb-4 shadow-sm">
               {/* Search and Filter Row */}
               <div className="row mb-4">
@@ -161,9 +165,9 @@ function MainDocuments() {
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
                     <option value="">Select Category</option>
-                    {categories.map((category, index) => (
-                      <option key={index} value={category}>
-                        {category}
+                    {categories.map((category) => (
+                      <option key={category.category_id} value={category.category_id}>
+                        {category.category_name}
                       </option>
                     ))}
                   </select>
@@ -232,12 +236,20 @@ function MainDocuments() {
 
         {/* Add Document Modal */}
         {showModal && (
-          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">Add New Document</h5>
-                  <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseModal}
+                  ></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body">
@@ -247,7 +259,9 @@ function MainDocuments() {
                       </div>
                     )}
                     <div className="mb-3">
-                      <label htmlFor="categoryId" className="form-label">Category Name</label>
+                      <label htmlFor="categoryId" className="form-label">
+                        Category Name
+                      </label>
                       <select
                         className="form-select"
                         id="categoryId"
@@ -258,14 +272,19 @@ function MainDocuments() {
                       >
                         <option value="">Select Category</option>
                         {categories.map((category) => (
-                          <option key={category.category_id} value={category.category_id}>
+                          <option
+                            key={category.category_id}
+                            value={category.category_id}
+                          >
                             {category.category_name}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="documentFile" className="form-label">Upload Document</label>
+                      <label htmlFor="documentFile" className="form-label">
+                        Upload Document
+                      </label>
                       <input
                         type="file"
                         className="form-control"
@@ -276,7 +295,9 @@ function MainDocuments() {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="description" className="form-label">Description</label>
+                      <label htmlFor="description" className="form-label">
+                        Description
+                      </label>
                       <textarea
                         className="form-control"
                         id="description"
@@ -288,7 +309,9 @@ function MainDocuments() {
                       ></textarea>
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="createdBy" className="form-label">Created By</label>
+                      <label htmlFor="createdBy" className="form-label">
+                        Created By
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -300,10 +323,19 @@ function MainDocuments() {
                     </div>
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={loading}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseModal}
+                      disabled={loading}
+                    >
                       Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={loading}
+                    >
                       {loading ? "Adding..." : "Add Document"}
                     </button>
                   </div>
@@ -314,7 +346,7 @@ function MainDocuments() {
         )}
       </MainSideBar>
     </>
-  )
+  );
 }
 
-export default MainDocuments
+export default MainDocuments;
