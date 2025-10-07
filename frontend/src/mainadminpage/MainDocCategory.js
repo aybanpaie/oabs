@@ -181,7 +181,7 @@ function MainDocCategory() {
                     <tr>
                       <th>#</th>
                       <th>Category Name</th>
-                      <th>Description</th>
+                      <th className="w-50">Description</th>
                       <th>Date Added</th>
                       <th>Action</th>
                     </tr>

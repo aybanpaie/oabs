@@ -125,6 +125,13 @@ function MainSideBar({ children }) {
       icon: Folders, 
       path: '/oabps/main/documentcategory',
     },
+    
+    { 
+      id: 'forms', 
+      label: 'Document Forms', 
+      icon: Folders, 
+      path: '/oabps/main/documentforms',
+    },
     { 
       id: 'requests', 
       label: 'Requests', 

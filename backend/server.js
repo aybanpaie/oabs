@@ -814,4 +814,62 @@ app.delete("/api/document/delete/:id", async (req, res) => {
   }
 });
 
+// Add form field endpoint
+app.post("/api/form/add", async (req, res) => {
+  try {
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder } = req.body;
+
+    // Validation
+    if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Validate field type
+    const validFieldTypes = ["TEXT", "NUMBER", "DATE", "SELECT", "FILE"];
+    if (!validFieldTypes.includes(fieldType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid field type",
+      });
+    }
+
+    // Insert form field into database
+    const { data, error } = await supabase
+      .from("Document Forms")
+      .insert([
+        {
+          category_id: categoryId,
+          field_name: fieldName,
+          field_type: fieldType,
+          is_required: isRequired,
+          field_order: fieldOrder,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to add form field. Please try again.",
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Form field added successfully",
+      formField: data[0],
+    });
+  } catch (err) {
+    console.error("Add form field error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding form field",
+    });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

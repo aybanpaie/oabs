@@ -264,19 +264,6 @@ function MainDocuments() {
               <div className="row mb-4">
                 <div className="col-md-6">
                   <label className="form-label text-muted">
-                    Search by
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search by "
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                  />
-                </div>
-                
-                <div className="col-md-6">
-                  <label className="form-label text-muted">
                     Search by Category
                   </label>
                   <select
@@ -292,6 +279,20 @@ function MainDocuments() {
                     ))}
                   </select>
                 </div>
+                <div className="col-md-6">
+                  <label className="form-label text-muted">
+                    Search
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search..."
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                  />
+                </div>
+                
+                
               </div>
 
               {/* Table */}
