@@ -331,4 +331,64 @@ app.post("/api/user/login", async (req, res) => {
   }
 });
 
+// Add category endpoint
+app.post("/api/category/add", async (req, res) => {
+  try {
+    const { categoryName, description } = req.body;
+
+    // Validation
+    if (!categoryName || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name and description are required",
+      });
+    }
+
+    // Check if category name already exists
+    const { data: existingCategory } = await supabase
+      .from("Document Categories")
+      .select("category_name")
+      .eq("category_name", categoryName)
+      .single();
+
+    if (existingCategory) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name already exists",
+      });
+    }
+
+    // Insert category into database
+    const { data, error } = await supabase
+      .from("Document Categories")
+      .insert([
+        {
+          category_name: categoryName,
+          description: description,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to add category. Please try again.",
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Category added successfully",
+      category: data[0],
+    });
+  } catch (err) {
+    console.error("Add category error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding category",
+    });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
