@@ -872,4 +872,138 @@ app.post("/api/form/add", async (req, res) => {
   }
 });
 
+// Get all form fields endpoint
+app.get("/api/form/all", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("Document Forms")
+      .select("*")
+      .order("field_order", { ascending: true });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch form fields",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      formFields: data,
+    });
+  } catch (err) {
+    console.error("Fetch form fields error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching form fields",
+    });
+  }
+});
+
+// Update form field endpoint
+app.put("/api/form/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder } = req.body;
+
+    // Validation
+    if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Validate field type
+    const validFieldTypes = ["TEXT", "NUMBER", "DATE", "SELECT", "FILE"];
+    if (!validFieldTypes.includes(fieldType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid field type",
+      });
+    }
+
+    // Update form field in database
+    const { data, error } = await supabase
+      .from("Document Forms")
+      .update({
+        category_id: categoryId,
+        field_name: fieldName,
+        field_type: fieldType,
+        is_required: isRequired,
+        field_order: fieldOrder,
+      })
+      .eq("form_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update form field. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Form field not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Form field updated successfully",
+      formField: data[0],
+    });
+  } catch (err) {
+    console.error("Update form field error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating form field",
+    });
+  }
+});
+
+// Delete form field endpoint
+app.delete("/api/form/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete form field from database
+    const { data, error } = await supabase
+      .from("Document Forms")
+      .delete()
+      .eq("form_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete form field. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Form field not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Form field deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete form field error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting form field",
+    });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
