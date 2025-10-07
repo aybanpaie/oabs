@@ -4,6 +4,14 @@ import MainLogin from './mainadminpage/components/MainLogin'
 import MainRegister from './mainadminpage/components/MainRegister'
 
 import MainDashboard from './mainadminpage/MainDashboard'
+import MainDocuments from './mainadminpage/MainDocuments'
+import MainDocCategory from './mainadminpage/MainDocCategory'
+import MainRequests from './mainadminpage/MainRequests'
+import MainPayments from './mainadminpage/MainPayments'
+import MainTrasanctions from './mainadminpage/MainTrasanctions'
+import MainRoles from './mainadminpage/MainRoles'
+import MainUsers from './mainadminpage/MainUsers'
+import MainLogAudits from './mainadminpage/MainLogAudits'
 
 import UserRegister from './userpages/components/UserRegister'
 import UserLogin from './userpages/components/UserLogin'
@@ -57,6 +65,14 @@ function App() {
         <Route path='/oabps/main/register' element={<MainRegister/>}></Route>
 
         <Route path='/oabps/main/dashboard' element={<MainDashboard/>}></Route>
+        <Route path='/oabps/main/documents' element={<MainDocuments/>}></Route>
+        <Route path='/oabps/main/documentcategory' element={<MainDocCategory/>}></Route>
+        <Route path='/oabps/main/requests' element={<MainRequests/>}></Route>
+        <Route path='/oabps/main/payments' element={<MainPayments/>}></Route>
+        <Route path='/oabps/main/transactions' element={<MainTrasanctions/>}></Route>
+        <Route path='/oabps/main/roles' element={<MainRoles/>}></Route>
+        <Route path='/oabps/main/users' element={<MainUsers/>}></Route>
+        <Route path='/oabps/main/logaudits' element={<MainLogAudits/>}></Route>
 
         <Route path='/oabps/user/register' element={<UserRegister/>}></Route>
         <Route path='/oabps/user/login' element={<UserLogin/>}></Route>

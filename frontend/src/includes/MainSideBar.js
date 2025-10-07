@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -14,6 +14,8 @@ import {
   X,
   CreditCard,
   ClipboardClock,
+  UserRoundCog,
+  Settings
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -23,6 +25,22 @@ function MainSideBar({ children }) {
   const [activeItem, setActiveItem] = useState("dashboard");
   const [expandedItems, setExpandedItems] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Update active item based on current route
   useEffect(() => {
@@ -73,60 +91,75 @@ function MainSideBar({ children }) {
     navigate(child.path);
   };
 
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    
+    // Redirect to login page
+    navigate("/oabps/main/login");
+  };
+
+  const handleSettings = () => {
+    setShowUserMenu(false);
+    // Navigate to settings page
+    navigate("/oabps/main/settings");
+  };
+
   const menuItems = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-      path: "/main/dashboard",
+      path: "/oabps/main/dashboard",
     },
     {
       id: "documents",
       label: "Documents",
       icon: FolderOpen,
-      path: "/main/maindoc",
+      path: "/oabps/main/documents",
     },
     { 
       id: 'categories', 
       label: 'Document Categories', 
       icon: Folders, 
-      path: '/main/doccat',
+      path: '/oabps/main/documentcategory',
     },
     { 
       id: 'requests', 
       label: 'Requests', 
       icon: ClipboardClock, 
-      path: '/main/mainreq',
+      path: '/oabps/main/requests',
     },
     { 
       id: 'payment', 
       label: 'Payments', 
       icon: CreditCard, 
-      path: '/main/mainpay',
+      path: '/oabps/main/payments',
     },
     { 
       id: 'transaction', 
       label: 'Transactions', 
       icon: History, 
-      path: '/main/transactions' 
+      path: '/oabps/main/transactions' 
     },
     {
       id: "roles",
       label: "Roles",
       icon: Users,
-      path: "/main/roles",
+      path: "/oabps/main/roles",
     },
     {
       id: "users",
       label: "Users",
       icon: User,
-      path: "/main/mainusers",
+      path: "/oabps/main/users",
     },
     {
       id: "login-audits",
       label: "Login Audits",
       icon: History,
-      path: "/main/logaudit",
+      path: "/oabps/main/logaudits",
     },
     {
       id: "others",
@@ -243,10 +276,57 @@ function MainSideBar({ children }) {
                 <h4 className="mb-0">Dashboard</h4>
               </div>
 
-              <div className="d-flex align-items-center">
-                <Link to="/loginfinal/main">
-                  <LogOut className="text-secondary me-3" size={20} />
-                </Link>
+              <div className="d-flex align-items-center position-relative me-4" ref={userMenuRef}>
+                <div 
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <UserRoundCog className="text-secondary" size={24} />
+                </div>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div 
+                    className="position-absolute bg-white shadow-lg rounded border"
+                    style={{
+                      top: "100%",
+                      right: 0,
+                      marginTop: "0.5rem",
+                      minWidth: "200px",
+                      zIndex: 1000
+                    }}
+                  >
+                    <div className="py-1">
+                      <div
+                        className="d-flex align-items-center px-3 py-2 text-decoration-none"
+                        onClick={handleSettings}
+                        style={{ 
+                          cursor: "pointer",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8f9fa"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <Settings size={18} className="me-2 text-secondary" />
+                        <span className="text-dark">Settings</span>
+                      </div>
+                      <hr className="my-1" />
+                      <div
+                        className="d-flex align-items-center px-3 py-2 text-decoration-none"
+                        onClick={handleLogout}
+                        style={{ 
+                          cursor: "pointer",
+                          transition: "background-color 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8f9fa"}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                      >
+                        <LogOut size={18} className="me-2 text-danger" />
+                        <span className="text-danger">Logout</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
