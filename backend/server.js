@@ -391,4 +391,141 @@ app.post("/api/category/add", async (req, res) => {
   }
 });
 
+// Get all categories endpoint
+app.get("/api/category/all", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("Document Categories")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch categories",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      categories: data,
+    });
+  } catch (err) {
+    console.error("Fetch categories error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching categories",
+    });
+  }
+});
+
+// Update category endpoint
+app.put("/api/category/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { categoryName, description } = req.body;
+
+    // Validation
+    if (!categoryName || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name and description are required",
+      });
+    }
+
+    // Check if category name already exists (excluding current category)
+    const { data: existingCategory } = await supabase
+      .from("Document Categories")
+      .select("category_id")
+      .eq("category_name", categoryName)
+      .neq("category_id", id)
+      .single();
+
+    if (existingCategory) {
+      return res.status(400).json({
+        success: false,
+        message: "Category name already exists",
+      });
+    }
+
+    // Update category in database
+    const { data, error } = await supabase
+      .from("Document Categories")
+      .update({
+        category_name: categoryName,
+        description: description,
+      })
+      .eq("category_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update category. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+      category: data[0],
+    });
+  } catch (err) {
+    console.error("Update category error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating category",
+    });
+  }
+});
+
+// Delete category endpoint
+app.delete("/api/category/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete category from database
+    const { data, error } = await supabase
+      .from("Document Categories")
+      .delete()
+      .eq("category_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete category. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Category deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete category error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting category",
+    });
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
