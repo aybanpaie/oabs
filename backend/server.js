@@ -2,8 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
@@ -11,7 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",    
+      "http://localhost:3000",
       "https://oabsfront.onrender.com",
     ],
     credentials: true,
@@ -26,24 +24,9 @@ const supabase = createClient(
 );
 const PORT = process.env.PORT || 3000;
 
-// Configure multer for file uploads
-const uploadDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
-
+// Configure multer for memory storage (files stored in memory buffer)
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
 
@@ -566,14 +549,40 @@ app.post("/api/document/add", upload.single("document"), async (req, res) => {
       });
     }
 
-    // Insert document into database
+    // Generate unique filename
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`;
+    const filePath = `documents/${fileName}`;
+
+    // Upload file to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Supabase storage error:", uploadError);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to upload document. Please try again.",
+      });
+    }
+
+    // Get public URL for the uploaded file
+    const { data: publicUrlData } = supabase.storage
+      .from("documents")
+      .getPublicUrl(filePath);
+
+    // Insert document metadata into database
     const { data, error } = await supabase
       .from("Documents")
       .insert([
         {
           category_id: categoryId,
           document_name: file.originalname,
-          document_path: file.path,
+          document_path: publicUrlData.publicUrl,
           description: description,
           created_by: createdBy,
         },
@@ -581,11 +590,9 @@ app.post("/api/document/add", upload.single("document"), async (req, res) => {
       .select();
 
     if (error) {
-      console.error("Supabase error:", error);
+      console.error("Supabase database error:", error);
       // Delete uploaded file if database insert fails
-      if (fs.existsSync(file.path)) {
-        fs.unlinkSync(file.path);
-      }
+      await supabase.storage.from("documents").remove([filePath]);
       return res.status(500).json({
         success: false,
         message: "Failed to add document. Please try again.",
@@ -599,10 +606,6 @@ app.post("/api/document/add", upload.single("document"), async (req, res) => {
     });
   } catch (err) {
     console.error("Add document error:", err);
-    // Delete uploaded file if error occurs
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({
       success: false,
       message: "An error occurred while adding document",
