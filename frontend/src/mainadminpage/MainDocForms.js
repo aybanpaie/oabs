@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainSideBar from "../includes/MainSideBar";
-import { Plus, Trash, Pencil } from "lucide-react";
+import { Plus, Trash, Pencil, Eye } from "lucide-react";
 import axios from "axios";
 
 function MainDocForms() {
@@ -22,6 +22,11 @@ function MainDocForms() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [editingField, setEditingField] = useState(null);
+
+  // Form Preview states
+  const [previewCategoryId, setPreviewCategoryId] = useState("");
+  const [previewFields, setPreviewFields] = useState([]);
+  const [previewOptions, setPreviewOptions] = useState({});
 
   const navigate = useNavigate();
 
@@ -212,6 +217,109 @@ function MainDocForms() {
     }
   };
 
+  // Handle category change for form preview
+  const handlePreviewCategoryChange = async (e) => {
+    const selectedCategoryId = e.target.value;
+    setPreviewCategoryId(selectedCategoryId);
+
+    if (!selectedCategoryId) {
+      setPreviewFields([]);
+      setPreviewOptions({});
+      return;
+    }
+
+    try {
+      // Fetch form fields for selected category
+      const fieldsResponse = await axios.get("https://oabs-f7by.onrender.com/api/form/all");
+
+      if (fieldsResponse.data.success) {
+        // Filter fields by category and sort by field_order
+        const categoryFields = fieldsResponse.data.formFields
+          .filter((field) => field.category_id === parseInt(selectedCategoryId))
+          .sort((a, b) => a.field_order - b.field_order);
+
+        setPreviewFields(categoryFields);
+
+        // Fetch options for SELECT fields
+        const selectFields = categoryFields.filter((field) => field.field_type === "SELECT");
+        const optionsMap = {};
+
+        for (const field of selectFields) {
+          try {
+            const optionsResponse = await axios.get(
+              `https://oabs-f7by.onrender.com/api/option/by-field/${field.form_id}`
+            );
+            if (optionsResponse.data.success) {
+              optionsMap[field.form_id] = optionsResponse.data.options;
+            }
+          } catch (err) {
+            console.error(`Error fetching options for field ${field.form_id}:`, err);
+          }
+        }
+
+        setPreviewOptions(optionsMap);
+      }
+    } catch (err) {
+      console.error("Error loading form preview:", err);
+      alert("Error loading form preview");
+    }
+  };
+
+  // Group fields by group_id
+  const groupFieldsByGroup = (fields) => {
+    const grouped = {};
+    const ungrouped = [];
+
+    fields.forEach((field) => {
+      if (field.group_id) {
+        if (!grouped[field.group_id]) {
+          grouped[field.group_id] = [];
+        }
+        grouped[field.group_id].push(field);
+      } else {
+        ungrouped.push(field);
+      }
+    });
+
+    return { grouped, ungrouped };
+  };
+
+  // Render form field based on type
+  const renderPreviewField = (field) => {
+    const commonProps = {
+      className: "form-control",
+      placeholder: field.placeholder || "",
+      required: field.is_required,
+      defaultValue: field.default_value || "",
+    };
+
+    switch (field.field_type) {
+      case "TEXT":
+        return <input type="text" {...commonProps} />;
+      case "TEXTAREA":
+        return <textarea {...commonProps} rows="3"></textarea>;
+      case "NUMBER":
+        return <input type="number" {...commonProps} />;
+      case "DATE":
+        return <input type="date" {...commonProps} />;
+      case "SELECT":
+        return (
+          <select {...commonProps}>
+            <option value="">Select an option</option>
+            {(previewOptions[field.form_id] || []).map((option) => (
+              <option key={option.option_id} value={option.option_value}>
+                {option.option_value}
+              </option>
+            ))}
+          </select>
+        );
+      case "FILE":
+        return <input type="file" className="form-control" required={field.is_required} />;
+      default:
+        return <input type="text" {...commonProps} />;
+    }
+  };
+
   return (
     <>
       <MainSideBar>
@@ -277,6 +385,127 @@ function MainDocForms() {
               </div>
             </div>
           </div>
+
+          {/* Form Preview Section */}
+          <div className="bg-light p-4 border-bottom text-center shadow-sm">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="mb-0">
+                <Eye className="me-2" style={{ display: "inline" }} />
+                Form Preview Blueprint
+              </h4>
+            </div>
+            <hr className="my-3" />
+
+            {/* Category Selector */}
+            <div className="row mb-4">
+              <div className="col-md-6 mx-auto">
+                <label htmlFor="previewCategory" className="form-label fw-bold">
+                  Select Document Category to Preview Form
+                </label>
+                <select
+                  className="form-select"
+                  id="previewCategory"
+                  value={previewCategoryId}
+                  onChange={handlePreviewCategoryChange}
+                >
+                  <option value="">-- Select Category --</option>
+                  {categories.map((category) => (
+                    <option key={category.category_id} value={category.category_id}>
+                      {category.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Form Preview */}
+            {previewCategoryId && previewFields.length > 0 && (
+              <div className="bg-white p-4 rounded shadow-sm">
+                <h5 className="mb-4 text-primary">
+                  {categories.find((cat) => cat.category_id === parseInt(previewCategoryId))?.category_name || "Form"} - Dynamic Form
+                </h5>
+
+                {(() => {
+                  const { grouped, ungrouped } = groupFieldsByGroup(previewFields);
+
+                  return (
+                    <>
+                      {/* Ungrouped Fields */}
+                      {ungrouped.length > 0 && (
+                        <div className="mb-4">
+                          {ungrouped.map((field) => (
+                            <div key={field.form_id} className="mb-3">
+                              <label className="form-label fw-semibold">
+                                {field.field_name}
+                                {field.is_required && <span className="text-danger"> *</span>}
+                              </label>
+                              {renderPreviewField(field)}
+                              {field.validation_rule && (
+                                <small className="text-muted d-block mt-1">
+                                  Validation: {field.validation_rule}
+                                </small>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Grouped Fields */}
+                      {Object.keys(grouped).length > 0 &&
+                        Object.keys(grouped)
+                          .sort((a, b) => {
+                            const groupA = groups.find((g) => g.group_id === parseInt(a));
+                            const groupB = groups.find((g) => g.group_id === parseInt(b));
+                            return (groupA?.group_order || 0) - (groupB?.group_order || 0);
+                          })
+                          .map((groupId) => {
+                            const group = groups.find((g) => g.group_id === parseInt(groupId));
+                            return (
+                              <div key={groupId} className="mb-4 border rounded p-3 bg-light">
+                                <h6 className="text-secondary mb-3 fw-bold">
+                                  {group?.group_name || `Group ${groupId}`}
+                                </h6>
+                                {grouped[groupId].map((field) => (
+                                  <div key={field.form_id} className="mb-3">
+                                    <label className="form-label fw-semibold">
+                                      {field.field_name}
+                                      {field.is_required && <span className="text-danger"> *</span>}
+                                    </label>
+                                    {renderPreviewField(field)}
+                                    {field.validation_rule && (
+                                      <small className="text-muted d-block mt-1">
+                                        Validation: {field.validation_rule}
+                                      </small>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })}
+                    </>
+                  );
+                })()}
+
+                <div className="mt-4 text-muted small">
+                  <strong>Preview Details:</strong>
+                  <ul className="text-start">
+                    <li>Total Fields: {previewFields.length}</li>
+                    <li>Required Fields: {previewFields.filter((f) => f.is_required).length}</li>
+                    <li>Optional Fields: {previewFields.filter((f) => !f.is_required).length}</li>
+                    <li>
+                      Field Types: {[...new Set(previewFields.map((f) => f.field_type))].join(", ")}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {previewCategoryId && previewFields.length === 0 && (
+              <div className="alert alert-info">
+                No form fields configured for this category. Add fields using the "Add Form" button above.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Add Form Modal */}
@@ -338,10 +567,12 @@ function MainDocForms() {
                       >
                         <option value="">Select Field Type</option>
                         <option value="TEXT">TEXT</option>
+                        <option value="TEXTAREA">TEXTAREA</option>
                         <option value="NUMBER">NUMBER</option>
                         <option value="DATE">DATE</option>
                         <option value="SELECT">SELECT</option>
                         <option value="FILE">FILE</option>
+                        
                       </select>
                     </div>
                     <div className="mb-3">
@@ -523,10 +754,12 @@ function MainDocForms() {
                       >
                         <option value="">Select Field Type</option>
                         <option value="TEXT">TEXT</option>
+                        <option value="TEXTAREA">TEXTAREA</option>
                         <option value="NUMBER">NUMBER</option>
                         <option value="DATE">DATE</option>
                         <option value="SELECT">SELECT</option>
                         <option value="FILE">FILE</option>
+                        
                       </select>
                     </div>
                     <div className="mb-3">

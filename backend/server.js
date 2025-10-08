@@ -828,7 +828,7 @@ app.post("/api/form/add", async (req, res) => {
     }
 
     // Validate field type
-    const validFieldTypes = ["TEXT", "NUMBER", "DATE", "SELECT", "FILE"];
+    const validFieldTypes = ["TEXT", "TEXTAREA", "NUMBER", "DATE", "SELECT", "FILE"];
     if (!validFieldTypes.includes(fieldType)) {
       return res.status(400).json({
         success: false,
@@ -920,7 +920,7 @@ app.put("/api/form/update/:id", async (req, res) => {
     }
 
     // Validate field type
-    const validFieldTypes = ["TEXT", "NUMBER", "DATE", "SELECT", "FILE"];
+    const validFieldTypes = ["TEXT", "TEXTAREA", "NUMBER", "DATE", "SELECT", "FILE"];
     if (!validFieldTypes.includes(fieldType)) {
       return res.status(400).json({
         success: false,

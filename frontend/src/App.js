@@ -21,6 +21,7 @@ import UserLogin from './userpages/components/UserLogin'
 
 // --------------------------------------------------------
 
+import Loginfinal from './userpages/components/Loginfinal'
 import Creatw from './userpages/components/Creatw'
 import Forgot from './userpages/components/Forgot'
 
@@ -39,12 +40,7 @@ import Transaction from './userpages/Transaction'
 import Downloadables from './userpages/Downloadables'
 import Forms from './userpages/Forms'
 import BrgyClearance from './userpages/documentz/BrgyClearance'
-import Cooperatives from './userpages/documentz/Cooperatives'
-import Foundation from './userpages/documentz/Foundation'
-import Lease from './userpages/documentz/Lease'
-import Occupancy from './userpages/documentz/Occupancy'
-import Partnership from './userpages/documentz/Partnership'
-import SingleSole from './userpages/documentz/SingleSole'
+
 
 function App() {
 
@@ -73,7 +69,7 @@ function App() {
 
         {/* ----------------------------------------------------------- */}
 
-        
+        <Route path='/loginfinal/user' element={<Loginfinal/>}></Route>
         <Route path='/create/user' element={<Creatw/>}></Route>
         <Route path='/forgot/user' element={<Forgot/>}></Route>
 
@@ -97,12 +93,7 @@ function App() {
 
 
         <Route path='/requirements/brgyclearance' element={<BrgyClearance />}></Route>
-        <Route path='/requirements/cooperatives' element={<Cooperatives />}></Route>
-        <Route path='/requirements/foundation' element={<Foundation />}></Route>
-        <Route path='/requirements/lease' element={<Lease />}></Route>
-        <Route path='/requirements/occupancy' element={<Occupancy />}></Route>
-        <Route path='/requirements/partnership' element={<Partnership />}></Route>
-        <Route path='/requirements/singlesole' element={<SingleSole />}></Route>
+        
       
       </Routes>
     </BrowserRouter>
