@@ -817,7 +817,7 @@ app.delete("/api/document/delete/:id", async (req, res) => {
 // Add form field endpoint
 app.post("/api/form/add", async (req, res) => {
   try {
-    const { categoryId, fieldName, fieldType, isRequired, fieldOrder } = req.body;
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule } = req.body;
 
     // Validation
     if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
@@ -846,6 +846,10 @@ app.post("/api/form/add", async (req, res) => {
           field_type: fieldType,
           is_required: isRequired,
           field_order: fieldOrder,
+          placeholder: placeholder || null,
+          default_value: defaultValue || null,
+          group_id: groupId || null,
+          validation_rule: validationRule || null,
         },
       ])
       .select();
@@ -905,7 +909,7 @@ app.get("/api/form/all", async (req, res) => {
 app.put("/api/form/update/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { categoryId, fieldName, fieldType, isRequired, fieldOrder } = req.body;
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule } = req.body;
 
     // Validation
     if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
@@ -933,6 +937,10 @@ app.put("/api/form/update/:id", async (req, res) => {
         field_type: fieldType,
         is_required: isRequired,
         field_order: fieldOrder,
+        placeholder: placeholder || null,
+        default_value: defaultValue || null,
+        group_id: groupId || null,
+        validation_rule: validationRule || null,
       })
       .eq("form_id", id)
       .select();
@@ -1002,6 +1010,378 @@ app.delete("/api/form/delete/:id", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "An error occurred while deleting form field",
+    });
+  }
+});
+
+// Get all field groups endpoint
+app.get("/api/group/all", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("Form Field Groups")
+      .select("*")
+      .order("group_order", { ascending: true });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch field groups",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      groups: data,
+    });
+  } catch (err) {
+    console.error("Fetch field groups error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching field groups",
+    });
+  }
+});
+
+// Add field group endpoint
+app.post("/api/group/add", async (req, res) => {
+  try {
+    const { categoryId, groupName, groupOrder } = req.body;
+
+    // Validation
+    if (!categoryId || !groupName || !groupOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Insert field group into database
+    const { data, error } = await supabase
+      .from("Form Field Groups")
+      .insert([
+        {
+          category_id: categoryId,
+          group_name: groupName,
+          group_order: groupOrder,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to add field group. Please try again.",
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Field group added successfully",
+      group: data[0],
+    });
+  } catch (err) {
+    console.error("Add field group error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding field group",
+    });
+  }
+});
+
+// Update field group endpoint
+app.put("/api/group/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { categoryId, groupName, groupOrder } = req.body;
+
+    // Validation
+    if (!categoryId || !groupName || !groupOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Update field group in database
+    const { data, error } = await supabase
+      .from("Form Field Groups")
+      .update({
+        category_id: categoryId,
+        group_name: groupName,
+        group_order: groupOrder,
+      })
+      .eq("group_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update field group. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Field group not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Field group updated successfully",
+      group: data[0],
+    });
+  } catch (err) {
+    console.error("Update field group error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating field group",
+    });
+  }
+});
+
+// Delete field group endpoint
+app.delete("/api/group/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete field group from database
+    const { data, error } = await supabase
+      .from("Form Field Groups")
+      .delete()
+      .eq("group_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete field group. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Field group not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Field group deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete field group error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting field group",
+    });
+  }
+});
+
+// Get all field options endpoint
+app.get("/api/option/all", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("Form Field Options")
+      .select("*")
+      .order("option_order", { ascending: true });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch field options",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      options: data,
+    });
+  } catch (err) {
+    console.error("Fetch field options error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching field options",
+    });
+  }
+});
+
+// Get options by form field ID
+app.get("/api/option/by-field/:formId", async (req, res) => {
+  try {
+    const { formId } = req.params;
+
+    const { data, error } = await supabase
+      .from("Form Field Options")
+      .select("*")
+      .eq("form_id", formId)
+      .order("option_order", { ascending: true });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch field options",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      options: data,
+    });
+  } catch (err) {
+    console.error("Fetch field options error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching field options",
+    });
+  }
+});
+
+// Add field option endpoint
+app.post("/api/option/add", async (req, res) => {
+  try {
+    const { formId, optionValue, optionOrder } = req.body;
+
+    // Validation
+    if (!formId || !optionValue || !optionOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Insert field option into database
+    const { data, error } = await supabase
+      .from("Form Field Options")
+      .insert([
+        {
+          form_id: formId,
+          option_value: optionValue,
+          option_order: optionOrder,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to add field option. Please try again.",
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Field option added successfully",
+      option: data[0],
+    });
+  } catch (err) {
+    console.error("Add field option error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while adding field option",
+    });
+  }
+});
+
+// Update field option endpoint
+app.put("/api/option/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { formId, optionValue, optionOrder } = req.body;
+
+    // Validation
+    if (!formId || !optionValue || !optionOrder) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Update field option in database
+    const { data, error } = await supabase
+      .from("Form Field Options")
+      .update({
+        form_id: formId,
+        option_value: optionValue,
+        option_order: optionOrder,
+      })
+      .eq("option_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update field option. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Field option not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Field option updated successfully",
+      option: data[0],
+    });
+  } catch (err) {
+    console.error("Update field option error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating field option",
+    });
+  }
+});
+
+// Delete field option endpoint
+app.delete("/api/option/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete field option from database
+    const { data, error } = await supabase
+      .from("Form Field Options")
+      .delete()
+      .eq("option_id", id)
+      .select();
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete field option. Please try again.",
+      });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Field option not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Field option deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete field option error:", err);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting field option",
     });
   }
 });

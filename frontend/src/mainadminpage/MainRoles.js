@@ -4,19 +4,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function MainRoles() {
-    const [searchName, setSearchName] = useState("");
-    const [searchTags, setSearchTags] = useState("");
-      const [selectedCategory, setSelectedCategory] = useState("");
-    
-      const categories = ["Barangay Clearance", "Occupancy Permit"];
+  const [searchName, setSearchName] = useState("");
+  const [searchTags, setSearchTags] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-      const navigate = useNavigate();
+  const categories = ["Barangay Clearance", "Occupancy Permit"];
+
+  const navigate = useNavigate();
   const [username, setUsername] = useState("User");
 
   useEffect(() => {
     // Get user data from localStorage
     const userData = localStorage.getItem("user");
-    
+
     if (!userData) {
       // If no user data, redirect to login
       navigate("/oabps/main/login");
@@ -36,30 +36,19 @@ function MainRoles() {
     <>
       <MainSideBar>
         <div className="container-fluid p-4">
-            <h2 className="display-5 fw-bold text-dark mb-2">Welcome, {username}!</h2>
           {/* Header */}
 
           <div className="bg-light p-4 border-bottom text-center mb-4 shadow-sm">
-            {/* Search and Filter Row */}
-            <div className="row mb-4">
-              <div className="col-md-4 d-flex">
-                <button className="btn btn-outline-secondary me-2 mx-1">
-                  <Plus /> Add Role
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="mb-0">Admins</h4>
+              <div>
+                <button className="btn btn-outline-secondary me-2">
+                  <Plus /> Add Admin
                 </button>
-              </div>
-              <div className="col-md-4"></div>
-              <div className="col-md-4">
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  placeholder="Search..."
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                />
               </div>
             </div>
 
-            <hr/>
+            <hr />
 
             {/* Table */}
             <div className="table-responsive">
@@ -67,7 +56,7 @@ function MainRoles() {
                 <thead className="table-light">
                   <tr>
                     <th>#</th>
-                    <th>Username</th>
+                    <th>Full Name</th>
                     <th>Role</th>
                     <th>Assigned Document</th>
                     <th>Status</th>
@@ -77,28 +66,12 @@ function MainRoles() {
                 </thead>
                 <tbody>
                   <tr>
-                  <td>1</td>
-                  <td>Paiz</td>
-                  <td>Admin</td>
-                  <td>All</td>
-                  <td>Active</td>
-                  <td>00-00-000</td>
-                    <td>
-                      <button className="btn btn-sm">
-                        <Pencil className="text-primary" />
-                      </button>
-                      <button className="btn btn-sm">
-                        <Trash className="text-danger" />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Simpz</td>
-                  <td>Sub-Admin</td>
-                  <td>Barangay Clearance</td>
-                  <td>Inactive</td>
-                  <td>00-00-0000</td>
+                    <td>1</td>
+                    <td>Paiz</td>
+                    <td>Admin</td>
+                    <td>All</td>
+                    <td>Active</td>
+                    <td>00-00-000</td>
                     <td>
                       <button className="btn btn-sm">
                         <Pencil className="text-primary" />
@@ -115,7 +88,7 @@ function MainRoles() {
         </div>
       </MainSideBar>
     </>
-  )
+  );
 }
 
-export default MainRoles
+export default MainRoles;

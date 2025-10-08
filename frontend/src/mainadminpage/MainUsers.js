@@ -31,14 +31,14 @@ function MainUsers() {
     <>
       <MainSideBar>
         <div className="container-fluid p-4">
-            <h2 className="display-5 fw-bold text-dark mb-2">Welcome, {username}!</h2>
+           
           {/* Header */}
 
           <div className="bg-light p-4 border-bottom text-center mb-4 shadow-sm">
             {/* Search and Filter Row */}
             <div className="row mb-4">
               <div className="col-md-4 d-flex">
-                <h4 className="mb-0">Users</h4>
+                <h4 className="mb-0">Owners</h4>
               </div>
               <div className="col-md-4"></div>
               <div className="col-md-4">

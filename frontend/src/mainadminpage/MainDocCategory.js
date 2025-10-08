@@ -180,9 +180,9 @@ function MainDocCategory() {
                   <thead className="table-light">
                     <tr>
                       <th>#</th>
-                      <th>Category Name</th>
+                      <th className="w-25">Category Name</th>
                       <th className="w-50">Description</th>
-                      <th>Date Added</th>
+                      
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -199,9 +199,7 @@ function MainDocCategory() {
                           <td>{index + 1}</td>
                           <td>{category.category_name}</td>
                           <td>{category.description}</td>
-                          <td>
-                            {new Date(category.created_at).toLocaleDateString()}
-                          </td>
+                          
                           <td>
                             <button
                               className="btn btn-sm"

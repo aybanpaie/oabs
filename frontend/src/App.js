@@ -7,6 +7,8 @@ import MainDashboard from './mainadminpage/MainDashboard'
 import MainDocuments from './mainadminpage/MainDocuments'
 import MainDocCategory from './mainadminpage/MainDocCategory'
 import MainDocForms from './mainadminpage/MainDocForms'
+import MainFieldGroups from './mainadminpage/MainFieldGroups'
+import MainFieldOptions from './mainadminpage/MainFieldOptions'
 import MainRequests from './mainadminpage/MainRequests'
 import MainPayments from './mainadminpage/MainPayments'
 import MainTrasanctions from './mainadminpage/MainTrasanctions'
@@ -19,20 +21,8 @@ import UserLogin from './userpages/components/UserLogin'
 
 // --------------------------------------------------------
 
-import Loginfinal from './userpages/components/Loginfinal'
 import Creatw from './userpages/components/Creatw'
 import Forgot from './userpages/components/Forgot'
-
-import LoginMain from './mainadminpage/components/LoginMain'
-import DashMain from './mainadminpage/DashboardMain'
-import MainDoc from './mainadminpage/Docoment'
-import DocCat from './mainadminpage/DocCategory'
-import MainReq from './mainadminpage/Requests'
-import MainPay from './mainadminpage/Payments'
-import MainTrasantions from './mainadminpage/Transactions'
-import Roles from './mainadminpage/Roles'
-import MainUser from './mainadminpage/Users'
-import LogAudit from './mainadminpage/LogAudit'
 
 import Home from './pages/Home'
 import Requirements from './pages/Requirements'
@@ -69,6 +59,8 @@ function App() {
         <Route path='/oabps/main/documents' element={<MainDocuments/>}></Route>
         <Route path='/oabps/main/documentcategory' element={<MainDocCategory/>}></Route>
         <Route path='/oabps/main/documentforms' element={<MainDocForms/>}></Route>
+        <Route path='/oabps/main/fieldgroups' element={<MainFieldGroups/>}></Route>
+        <Route path='/oabps/main/fieldoptions' element={<MainFieldOptions/>}></Route>
         <Route path='/oabps/main/requests' element={<MainRequests/>}></Route>
         <Route path='/oabps/main/payments' element={<MainPayments/>}></Route>
         <Route path='/oabps/main/transactions' element={<MainTrasanctions/>}></Route>
@@ -81,20 +73,11 @@ function App() {
 
         {/* ----------------------------------------------------------- */}
 
-        <Route path='/loginfinal/user' element={<Loginfinal/>}></Route>
+        
         <Route path='/create/user' element={<Creatw/>}></Route>
         <Route path='/forgot/user' element={<Forgot/>}></Route>
 
-        <Route path='/loginfinal/main' element={<LoginMain/>}></Route>
-        <Route path='/main/dashboard' element={<DashMain/>}></Route>
-        <Route path='/main/maindoc' element={<MainDoc/>}></Route>
-        <Route path='/main/doccat' element={<DocCat/>}></Route>
-        <Route path='/main/mainreq' element={<MainReq/>}></Route>
-        <Route path='/main/mainpay' element={<MainPay/>}></Route>
-        <Route path='/main/transactions' element={<MainTrasantions/>}></Route>
-        <Route path='/main/roles' element={<Roles/>}></Route>
-        <Route path='/main/mainusers' element={<MainUser/>}></Route>
-        <Route path='/main/logaudit' element={<LogAudit/>}></Route>
+        
 
         <Route path='/' element={<Home/>}></Route>
         <Route path='/home' element={<Home/>}></Route>

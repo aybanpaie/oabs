@@ -15,7 +15,7 @@ import {
   CreditCard,
   ClipboardClock,
   UserRoundCog,
-  Settings
+  Settings,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -95,7 +95,7 @@ function MainSideBar({ children }) {
     // Clear localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    
+
     // Redirect to login page
     navigate("/oabps/main/login");
   };
@@ -119,49 +119,69 @@ function MainSideBar({ children }) {
       icon: FolderOpen,
       path: "/oabps/main/documents",
     },
-    { 
-      id: 'categories', 
-      label: 'Document Categories', 
-      icon: Folders, 
-      path: '/oabps/main/documentcategory',
+    {
+      id: "categories",
+      label: "Document Categories",
+      icon: Folders,
+      path: "/oabps/main/documentcategory",
     },
-    
-    { 
-      id: 'forms', 
-      label: 'Document Forms', 
-      icon: Folders, 
-      path: '/oabps/main/documentforms',
-    },
-    { 
-      id: 'requests', 
-      label: 'Requests', 
-      icon: ClipboardClock, 
-      path: '/oabps/main/requests',
-    },
-    { 
-      id: 'payment', 
-      label: 'Payments', 
-      icon: CreditCard, 
-      path: '/oabps/main/payments',
-    },
-    { 
-      id: 'transaction', 
-      label: 'Transactions', 
-      icon: History, 
-      path: '/oabps/main/transactions' 
+
+    {
+      id: "forms",
+      label: "Document Forms",
+      icon: Folders,
+      path: "/oabps/main/documentforms",
     },
     {
-      id: "roles",
-      label: "Roles",
-      icon: Users,
-      path: "/oabps/main/roles",
+      id: "fieldgroups",
+      label: "Field Groups",
+      icon: Folders,
+      path: "/oabps/main/fieldgroups",
     },
+    {
+      id: "fieldoptions",
+      label: "Field Options",
+      icon: Folders,
+      path: "/oabps/main/fieldoptions",
+    },
+    {
+      id: "requests",
+      label: "Requests",
+      icon: ClipboardClock,
+      path: "/oabps/main/requests",
+    },
+    {
+      id: "payment",
+      label: "Payments",
+      icon: CreditCard,
+      path: "/oabps/main/payments",
+    },
+    {
+      id: "transaction",
+      label: "Transactions",
+      icon: History,
+      path: "/oabps/main/transactions",
+    },
+
     {
       id: "users",
       label: "Users",
-      icon: User,
-      path: "/oabps/main/users",
+      icon: Users,
+      path: "/users",
+      children: [
+        {
+          id: "admin",
+          label: "Admins",
+          path: "/oabps/main/roles",
+        },
+        {
+          id: "owners",
+          label: "Owners",
+          path: "/oabps/main/users",
+        },
+      ],
     },
+
     {
       id: "login-audits",
       label: "Login Audits",
@@ -283,8 +303,11 @@ function MainSideBar({ children }) {
                 <h4 className="mb-0">Dashboard</h4>
               </div>
 
-              <div className="d-flex align-items-center position-relative me-4" ref={userMenuRef}>
-                <div 
+              <div
+                className="d-flex align-items-center position-relative me-4"
+                ref={userMenuRef}
+              >
+                <div
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   style={{ cursor: "pointer" }}
                 >
@@ -293,26 +316,31 @@ function MainSideBar({ children }) {
 
                 {/* User Dropdown Menu */}
                 {showUserMenu && (
-                  <div 
+                  <div
                     className="position-absolute bg-white shadow-lg rounded border"
                     style={{
                       top: "100%",
                       right: 0,
                       marginTop: "0.5rem",
                       minWidth: "200px",
-                      zIndex: 1000
+                      zIndex: 1000,
                     }}
                   >
                     <div className="py-1">
                       <div
                         className="d-flex align-items-center px-3 py-2 text-decoration-none"
                         onClick={handleSettings}
-                        style={{ 
+                        style={{
                           cursor: "pointer",
-                          transition: "background-color 0.2s"
+                          transition: "background-color 0.2s",
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8f9fa"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#f8f9fa")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
                       >
                         <Settings size={18} className="me-2 text-secondary" />
                         <span className="text-dark">Settings</span>
@@ -321,12 +349,17 @@ function MainSideBar({ children }) {
                       <div
                         className="d-flex align-items-center px-3 py-2 text-decoration-none"
                         onClick={handleLogout}
-                        style={{ 
+                        style={{
                           cursor: "pointer",
-                          transition: "background-color 0.2s"
+                          transition: "background-color 0.2s",
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8f9fa"}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#f8f9fa")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
                       >
                         <LogOut size={18} className="me-2 text-danger" />
                         <span className="text-danger">Logout</span>

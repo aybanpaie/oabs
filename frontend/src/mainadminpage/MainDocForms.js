@@ -9,11 +9,16 @@ function MainDocForms() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [categories, setCategories] = useState([]);
   const [formFields, setFormFields] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [fieldName, setFieldName] = useState("");
   const [fieldType, setFieldType] = useState("");
   const [isRequired, setIsRequired] = useState(true);
   const [fieldOrder, setFieldOrder] = useState("");
+  const [placeholder, setPlaceholder] = useState("");
+  const [defaultValue, setDefaultValue] = useState("");
+  const [groupId, setGroupId] = useState("");
+  const [validationRule, setValidationRule] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [editingField, setEditingField] = useState(null);
@@ -30,8 +35,9 @@ function MainDocForms() {
       return;
     }
 
-    // Fetch categories and form fields
+    // Fetch categories, groups, and form fields
     fetchCategories();
+    fetchGroups();
     fetchFormFields();
   }, [navigate]);
 
@@ -43,6 +49,17 @@ function MainDocForms() {
       }
     } catch (err) {
       console.error("Error fetching categories:", err);
+    }
+  };
+
+  const fetchGroups = async () => {
+    try {
+      const response = await axios.get("https://oabs-f7by.onrender.com/api/group/all");
+      if (response.data.success) {
+        setGroups(response.data.groups);
+      }
+    } catch (err) {
+      console.error("Error fetching groups:", err);
     }
   };
 
@@ -68,6 +85,10 @@ function MainDocForms() {
     setFieldType("");
     setIsRequired(true);
     setFieldOrder("");
+    setPlaceholder("");
+    setDefaultValue("");
+    setGroupId("");
+    setValidationRule("");
     setError("");
   };
 
@@ -85,6 +106,10 @@ function MainDocForms() {
           fieldType,
           isRequired,
           fieldOrder: parseInt(fieldOrder),
+          placeholder,
+          defaultValue,
+          groupId: groupId || null,
+          validationRule,
         }
       );
 
@@ -109,6 +134,10 @@ function MainDocForms() {
     setFieldType(field.field_type);
     setIsRequired(field.is_required);
     setFieldOrder(field.field_order);
+    setPlaceholder(field.placeholder || "");
+    setDefaultValue(field.default_value || "");
+    setGroupId(field.group_id || "");
+    setValidationRule(field.validation_rule || "");
     setShowEditModal(true);
   };
 
@@ -120,6 +149,10 @@ function MainDocForms() {
     setFieldType("");
     setIsRequired(true);
     setFieldOrder("");
+    setPlaceholder("");
+    setDefaultValue("");
+    setGroupId("");
+    setValidationRule("");
     setError("");
   };
 
@@ -137,6 +170,10 @@ function MainDocForms() {
           fieldType,
           isRequired,
           fieldOrder: parseInt(fieldOrder),
+          placeholder,
+          defaultValue,
+          groupId: groupId || null,
+          validationRule,
         }
       );
 
@@ -356,6 +393,62 @@ function MainDocForms() {
                         disabled={loading}
                       />
                     </div>
+                    <div className="mb-3">
+                      <label htmlFor="placeholder" className="form-label">Placeholder</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="placeholder"
+                        value={placeholder}
+                        onChange={(e) => setPlaceholder(e.target.value)}
+                        placeholder="e.g., Enter your business name"
+                        disabled={loading}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="defaultValue" className="form-label">Default Value</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="defaultValue"
+                        value={defaultValue}
+                        onChange={(e) => setDefaultValue(e.target.value)}
+                        placeholder="e.g., N/A"
+                        disabled={loading}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="groupId" className="form-label">Field Group (Optional)</label>
+                      <select
+                        className="form-select"
+                        id="groupId"
+                        value={groupId}
+                        onChange={(e) => setGroupId(e.target.value)}
+                        disabled={loading}
+                      >
+                        <option value="">No Group</option>
+                        {groups.map((group) => (
+                          <option key={group.group_id} value={group.group_id}>
+                            {group.group_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="validationRule" className="form-label">Validation Rule</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="validationRule"
+                        value={validationRule}
+                        onChange={(e) => setValidationRule(e.target.value)}
+                        placeholder="e.g., email, phone, or regex pattern"
+                        disabled={loading}
+                      />
+                      <small className="text-muted">
+                        Optional: Use 'email', 'phone', or custom regex
+                      </small>
+                    </div>
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={loading}>
@@ -484,6 +577,62 @@ function MainDocForms() {
                         required
                         disabled={loading}
                       />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="editPlaceholder" className="form-label">Placeholder</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editPlaceholder"
+                        value={placeholder}
+                        onChange={(e) => setPlaceholder(e.target.value)}
+                        placeholder="e.g., Enter your business name"
+                        disabled={loading}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="editDefaultValue" className="form-label">Default Value</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editDefaultValue"
+                        value={defaultValue}
+                        onChange={(e) => setDefaultValue(e.target.value)}
+                        placeholder="e.g., N/A"
+                        disabled={loading}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="editGroupId" className="form-label">Field Group (Optional)</label>
+                      <select
+                        className="form-select"
+                        id="editGroupId"
+                        value={groupId}
+                        onChange={(e) => setGroupId(e.target.value)}
+                        disabled={loading}
+                      >
+                        <option value="">No Group</option>
+                        {groups.map((group) => (
+                          <option key={group.group_id} value={group.group_id}>
+                            {group.group_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="editValidationRule" className="form-label">Validation Rule</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="editValidationRule"
+                        value={validationRule}
+                        onChange={(e) => setValidationRule(e.target.value)}
+                        placeholder="e.g., email, phone, or regex pattern"
+                        disabled={loading}
+                      />
+                      <small className="text-muted">
+                        Optional: Use 'email', 'phone', or custom regex
+                      </small>
                     </div>
                   </div>
                   <div className="modal-footer">
