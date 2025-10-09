@@ -817,7 +817,7 @@ app.delete("/api/document/delete/:id", async (req, res) => {
 // Add form field endpoint
 app.post("/api/form/add", async (req, res) => {
   try {
-    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule } = req.body;
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule, fieldWidth } = req.body;
 
     // Validation
     if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
@@ -850,6 +850,7 @@ app.post("/api/form/add", async (req, res) => {
           default_value: defaultValue || null,
           group_id: groupId || null,
           validation_rule: validationRule || null,
+          field_width: fieldWidth || 12,
         },
       ])
       .select();
@@ -909,7 +910,7 @@ app.get("/api/form/all", async (req, res) => {
 app.put("/api/form/update/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule } = req.body;
+    const { categoryId, fieldName, fieldType, isRequired, fieldOrder, placeholder, defaultValue, groupId, validationRule, fieldWidth } = req.body;
 
     // Validation
     if (!categoryId || !fieldName || !fieldType || isRequired === undefined || !fieldOrder) {
@@ -941,6 +942,7 @@ app.put("/api/form/update/:id", async (req, res) => {
         default_value: defaultValue || null,
         group_id: groupId || null,
         validation_rule: validationRule || null,
+        field_width: fieldWidth || 12,
       })
       .eq("form_id", id)
       .select();

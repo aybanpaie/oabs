@@ -19,6 +19,7 @@ function MainDocForms() {
   const [defaultValue, setDefaultValue] = useState("");
   const [groupId, setGroupId] = useState("");
   const [validationRule, setValidationRule] = useState("");
+  const [fieldWidth, setFieldWidth] = useState("12");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [editingField, setEditingField] = useState(null);
@@ -94,6 +95,7 @@ function MainDocForms() {
     setDefaultValue("");
     setGroupId("");
     setValidationRule("");
+    setFieldWidth("12");
     setError("");
   };
 
@@ -115,6 +117,7 @@ function MainDocForms() {
           defaultValue,
           groupId: groupId || null,
           validationRule,
+          fieldWidth: parseInt(fieldWidth),
         }
       );
 
@@ -143,6 +146,7 @@ function MainDocForms() {
     setDefaultValue(field.default_value || "");
     setGroupId(field.group_id || "");
     setValidationRule(field.validation_rule || "");
+    setFieldWidth(field.field_width ? field.field_width.toString() : "12");
     setShowEditModal(true);
   };
 
@@ -158,6 +162,7 @@ function MainDocForms() {
     setDefaultValue("");
     setGroupId("");
     setValidationRule("");
+    setFieldWidth("12");
     setError("");
   };
 
@@ -179,6 +184,7 @@ function MainDocForms() {
           defaultValue,
           groupId: groupId || null,
           validationRule,
+          fieldWidth: parseInt(fieldWidth),
         }
       );
 
@@ -287,7 +293,7 @@ function MainDocForms() {
   // Render form field based on type
   const renderPreviewField = (field) => {
     const commonProps = {
-      className: "form-control",
+      className: "form-control form-control-lg",
       placeholder: field.placeholder || "",
       required: field.is_required,
       defaultValue: field.default_value || "",
@@ -314,10 +320,51 @@ function MainDocForms() {
           </select>
         );
       case "FILE":
-        return <input type="file" className="form-control" required={field.is_required} />;
+        return <input type="file" className="form-control form-control-lg" required={field.is_required} />;
       default:
         return <input type="text" {...commonProps} />;
     }
+  };
+
+  // Render fields in row with column layout
+  const renderFieldsInRow = (fields) => {
+    const rows = [];
+    let currentRow = [];
+
+    fields.forEach((field, index) => {
+      // Default to full width if no field_width specified
+      const fieldWidth = field.field_width || 12;
+
+      currentRow.push({ field, width: fieldWidth });
+
+      // Calculate total width in current row
+      const totalWidth = currentRow.reduce((sum, item) => sum + item.width, 0);
+
+      // If row is full or last field, push to rows
+      if (totalWidth >= 12 || index === fields.length - 1) {
+        rows.push([...currentRow]);
+        currentRow = [];
+      }
+    });
+
+    return rows.map((row, rowIndex) => (
+      <div key={rowIndex} className="row mb-3">
+        {row.map(({ field, width }) => (
+          <div key={field.form_id} className={`col-md-${width}`}>
+            <label className="form-label text-muted">
+              {field.field_name.toUpperCase()}
+              {field.is_required && <span className="text-danger"> *</span>}
+            </label>
+            {renderPreviewField(field)}
+            {field.validation_rule && (
+              <small className="text-muted d-block mt-1">
+                Validation: {field.validation_rule}
+              </small>
+            )}
+          </div>
+        ))}
+      </div>
+    ));
   };
 
   return (
@@ -347,13 +394,14 @@ function MainDocForms() {
                       <th>Field Type</th>
                       <th>Is Required</th>
                       <th>Field Order</th>
+                      <th>Field Width</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {formFields.length === 0 ? (
                       <tr>
-                        <td colSpan="7" className="text-center">
+                        <td colSpan="8" className="text-center">
                           No form fields found
                         </td>
                       </tr>
@@ -369,6 +417,7 @@ function MainDocForms() {
                           <td>{field.field_type}</td>
                           <td>{field.is_required ? "Yes" : "No"}</td>
                           <td>{field.field_order}</td>
+                          <td>{field.field_width || 12} cols</td>
                           <td>
                             <button className="btn btn-sm" onClick={() => handleEdit(field)}>
                               <Pencil className="text-primary" />
@@ -433,20 +482,7 @@ function MainDocForms() {
                       {/* Ungrouped Fields */}
                       {ungrouped.length > 0 && (
                         <div className="mb-4">
-                          {ungrouped.map((field) => (
-                            <div key={field.form_id} className="mb-3">
-                              <label className="form-label fw-semibold">
-                                {field.field_name}
-                                {field.is_required && <span className="text-danger"> *</span>}
-                              </label>
-                              {renderPreviewField(field)}
-                              {field.validation_rule && (
-                                <small className="text-muted d-block mt-1">
-                                  Validation: {field.validation_rule}
-                                </small>
-                              )}
-                            </div>
-                          ))}
+                          {renderFieldsInRow(ungrouped)}
                         </div>
                       )}
 
@@ -465,20 +501,7 @@ function MainDocForms() {
                                 <h6 className="text-secondary mb-3 fw-bold">
                                   {group?.group_name || `Group ${groupId}`}
                                 </h6>
-                                {grouped[groupId].map((field) => (
-                                  <div key={field.form_id} className="mb-3">
-                                    <label className="form-label fw-semibold">
-                                      {field.field_name}
-                                      {field.is_required && <span className="text-danger"> *</span>}
-                                    </label>
-                                    {renderPreviewField(field)}
-                                    {field.validation_rule && (
-                                      <small className="text-muted d-block mt-1">
-                                        Validation: {field.validation_rule}
-                                      </small>
-                                    )}
-                                  </div>
-                                ))}
+                                {renderFieldsInRow(grouped[groupId])}
                               </div>
                             );
                           })}
@@ -680,6 +703,24 @@ function MainDocForms() {
                         Optional: Use 'email', 'phone', or custom regex
                       </small>
                     </div>
+                    <div className="mb-3">
+                      <label htmlFor="fieldWidth" className="form-label">Field Width</label>
+                      <select
+                        className="form-select"
+                        id="fieldWidth"
+                        value={fieldWidth}
+                        onChange={(e) => setFieldWidth(e.target.value)}
+                        disabled={loading}
+                      >
+                        <option value="12">Full Width (12 columns)</option>
+                        <option value="6">Half Width (6 columns)</option>
+                        <option value="4">Third Width (4 columns)</option>
+                        <option value="3">Quarter Width (3 columns)</option>
+                      </select>
+                      <small className="text-muted">
+                        Controls how wide the field appears in the form layout
+                      </small>
+                    </div>
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={loading}>
@@ -865,6 +906,24 @@ function MainDocForms() {
                       />
                       <small className="text-muted">
                         Optional: Use 'email', 'phone', or custom regex
+                      </small>
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="editFieldWidth" className="form-label">Field Width</label>
+                      <select
+                        className="form-select"
+                        id="editFieldWidth"
+                        value={fieldWidth}
+                        onChange={(e) => setFieldWidth(e.target.value)}
+                        disabled={loading}
+                      >
+                        <option value="12">Full Width (12 columns)</option>
+                        <option value="6">Half Width (6 columns)</option>
+                        <option value="4">Third Width (4 columns)</option>
+                        <option value="3">Quarter Width (3 columns)</option>
+                      </select>
+                      <small className="text-muted">
+                        Controls how wide the field appears in the form layout
                       </small>
                     </div>
                   </div>
