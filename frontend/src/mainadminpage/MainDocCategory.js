@@ -164,12 +164,12 @@ function MainDocCategory() {
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4 className="mb-0">Document Category</h4>
               <div>
-                <button
-                  className="btn btn-outline-secondary me-2"
-                  onClick={handleAddCategory}
-                >
-                  <Plus /> Add Category
-                </button>
+                  <button
+                    className="btn btn-outline-secondary me-2"
+                    onClick={handleAddCategory}
+                  >
+                    <Plus /> Add Category
+                  </button>
               </div>
             </div>
             <hr className="my-0" />

@@ -133,18 +133,6 @@ function MainSideBar({ children }) {
       path: "/oabps/main/documentforms",
     },
     {
-      id: "fieldgroups",
-      label: "Field Groups",
-      icon: Folders,
-      path: "/oabps/main/fieldgroups",
-    },
-    {
-      id: "fieldoptions",
-      label: "Field Options",
-      icon: Folders,
-      path: "/oabps/main/fieldoptions",
-    },
-    {
       id: "requests",
       label: "Requests",
       icon: ClipboardClock,
